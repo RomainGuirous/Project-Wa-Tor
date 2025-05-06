@@ -5,3 +5,6 @@ nombre_initiaux_requin = 5
 temps_reproduction_requin = 12
 temps_reproduction_poisson = 8
 energie_requin = 6
+gain_energie_en_mangeant_poisson = 3
+limite_age_requin = 90
+limite_age_poisson = 10
