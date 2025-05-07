@@ -3,10 +3,7 @@ from EtreVivant import EtreVivant
 from Poisson import Poisson
 
 class Requin(EtreVivant):
-    def __init__(self, **kwargs):
-        """Constructeur"""
-        super().__init__(**kwargs)
-        self.__energie = parametres.ENERGIE_INITIALE_REQUIN
+    __energie = parametres.ENERGIE_INITIALE_REQUIN
 
     @property
     def energie(self) -> int:
