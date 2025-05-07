@@ -1,7 +1,7 @@
-largeur_grille = 10
-longueur_grille = 10
-nombre_initiaux_poisson = 20
-nombre_initiaux_requin = 5
-temps_reproduction_requin = 12
-temps_reproduction_poisson = 8
-energie_requin = 6
+NOMBRE_LIGNE_GRILLE = 10
+NOMBRE_COLONNE_GRILLE = 10
+NOMBRE_INITIAUX_POISSON = 20
+NOMBRE_INITIAUX_REQUIN = 5
+TEMPS_REPRODUCTION_REQUIN = 12
+TEMPS_REPRODUCTION_POISSON = 8
+ENERGIE_INITIALE_REQUIN = 6
