@@ -1,6 +1,7 @@
 import parametres
 from EtreVivant import EtreVivant
 from Poisson import Poisson
+from __future__ import annotations
 
 class Requin(EtreVivant):
     __energie = parametres.ENERGIE_INITIALE_REQUIN
@@ -37,7 +38,7 @@ class Requin(EtreVivant):
         return True
 
 
-    def se_reproduire(self):
+    def se_reproduire(self) -> Requin:
         # Creation d'un nouveau requin à la même position
         nouveau_requin = Requin(position=self.position)
         
