@@ -35,12 +35,12 @@ class EtreVivant:
             )
         if direction == "O":
             self._position = (
-                (self._position[0] + 1) % NOMBRE_COLONNE_GRILLE,
+                (self._position[0] - 1) % NOMBRE_COLONNE_GRILLE,
                 self._position[1],
             )
         if direction == "E":
             self._position = (
-                (self._position[0] - 1) % NOMBRE_COLONNE_GRILLE,
+                (self._position[0] + 1) % NOMBRE_COLONNE_GRILLE,
                 self._position[1],
             )
 
