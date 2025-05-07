@@ -9,11 +9,6 @@ class Requin(EtreVivant):
     def energie(self) -> int:
         return self.__energie
 
-    @energie.setter
-    def energie(self, nouvelle_energie) -> bool:
-        self.__energie = nouvelle_energie
-        return True
-
     def __repr__(self) -> str:
         """Affichage terminal
 
@@ -37,7 +32,7 @@ class Requin(EtreVivant):
         self._position = proie.position
 
         # Mange la proie
-        self.energie += parametres.GAIN_ENERGIE_EN_MANGEANT_POISSON
+        self.__energie += parametres.GAIN_ENERGIE_EN_MANGEANT_POISSON
         proie._est_vivant = False
         return True
 
@@ -73,7 +68,7 @@ def test():
     print(repr(requin))
     print(repr(nouveau_requin))
 
-    nouveau_requin.energie = 0
+    nouveau_requin.__energie = 0
     nouveau_requin.mourir()
     print(repr(nouveau_requin))
     requin._age = 100
