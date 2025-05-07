@@ -41,7 +41,7 @@ class Requin(EtreVivant):
     def se_reproduire(self):
         # Creation d'un nouveau requin à la même position
         nouveau_requin = Requin()
-        nouveau_requin.position = self.position
+        nouveau_requin.position = self.position.copy()
         
         # Déplacement classique
         self.se_deplacer()
