@@ -3,14 +3,14 @@ from EtreVivant import EtreVivant
 
 class Poisson(EtreVivant):
 
-    def __init__(self, **kwargs):
-        """Constructeur"""
-        super().__init__(**kwargs)
-
     def se_reproduire(self):
+        """Se déplace et laisse un nouveau poisson derrière lui.
+
+        Returns:
+            Poisson: Le nouveau poisson
+        """
         # Creation d'un nouveau poisson à la même position
-        nouveau_poisson = Poisson()
-        nouveau_poisson.position = self.position.copy()
+        nouveau_poisson = Poisson(position=self.position)
         
         # Déplacement classique
         self.se_deplacer()
@@ -18,21 +18,19 @@ class Poisson(EtreVivant):
         return nouveau_poisson
 
     def mourir(self):
-        if (self.age > parametres.limite_age_poisson):
-            self.estVivant = False
+        if (self.age > parametres.LIMITE_AGE_POISSON):
+            self._est_vivant = False
 
 
 def test():
-    poisson = Poisson()
-    print(repr(poisson))
-    poisson.position = [1,1]
+    poisson = Poisson(position=(1,1))
     print(repr(poisson))
 
     nouveau_poisson = poisson.se_reproduire()
     print(repr(poisson))
     print(repr(nouveau_poisson))
 
-    poisson.age = 50
+    poisson._age = 50
     poisson.mourir()
     print(repr(poisson))
 
