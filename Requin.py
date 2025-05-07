@@ -1,7 +1,7 @@
+from __future__ import annotations
 import parametres
 from EtreVivant import EtreVivant
 from Poisson import Poisson
-from __future__ import annotations
 
 class Requin(EtreVivant):
     __energie = parametres.ENERGIE_INITIALE_REQUIN
