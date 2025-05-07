@@ -58,6 +58,9 @@ class EtreVivant:
 
         self._age += 1
 
+    def mourir():
+        pass
+
     def __repr__(self) -> str:
         # merci Benjamin <3
         attrs = ", ".join(f"{key}={value!r}" for key, value in vars(self).items())
