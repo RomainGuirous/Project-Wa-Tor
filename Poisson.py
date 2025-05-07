@@ -18,15 +18,10 @@ class Poisson(EtreVivant):
 
         return nouveau_poisson
 
-    def mourir(self) -> bool:
-        """Indique la mort du poisson
-
-        Returns:
-            bool: Retourne True si le poisson est mort, False sinon.
-        """
+    def mourir(self):
+        """Indique la mort du poisson"""
         if (self.age > parametres.LIMITE_AGE_POISSON):
             self._est_vivant = False
-            return True
 
 
 def test():
