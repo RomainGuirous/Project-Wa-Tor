@@ -45,37 +45,71 @@ class Monde:
             self.grille.placer_entite(x, y, requin)
 
     def executer_chronon(self):
+        """Execution de la phase dynamique associée à 1 chronon"""
+
+        # Incrément du chronon
+        self.chronon += 1
+
+        # Obtenir une liste aléatoires de toutes les positions dans la grille
         toutes_les_positions = [
             (x, y) for x in range(self.colonnes) for y in range(self.lignes)
         ]
-        random.shuffle(toutes_les_positions)
 
+        # Parcourir les entités et éxecuter les effets du temps
+        for x, y in toutes_les_positions:
+            entite = self.grille.lire_case(x, y)
+            if entite == None:
+                continue
+
+            # Effet du temps qui passe
+            entite.vieillir()
+            if isinstance(entite, Requin):
+                entite.perte_d_energie()
+            entite.mourir()
+
+            # Nettoyage. Note:
+            # cela empechera les requins de manger des poissons morts
+            # cela permettra aux autres entites de se déplacer sur les case occupés par les entités mortes
+            self.grille.nettoyer_case(x, y)
+
+        self.executer_toutes_les_actions()
+
+        # Parcourir les entités pour nettoyer les morts
         for x, y in toutes_les_positions:
             entite = self.grille.lire_case(x, y)
             if entite is None:
                 continue
 
-            ancienne_position = entite.position
-            entite.vieillir()
-            entite.mourir()
+            # Nettoyage
+            self.grille.nettoyer_case(x, y)
 
-            if not entite._est_vivant:
-                self.grille.placer_entite(*ancienne_position, None)
-                continue
+    # TODO: Sanae implemente cette partie
+    def executer_toutes_les_actions(self):
+        pass
+        # # Obtenir une liste aléatoires de toutes les positions dans la grille
+        # toutes_les_positions = [
+        #     (x, y) for x in range(self.colonnes) for y in range(self.lignes)
+        # ]
+        # random.shuffle(toutes_les_positions)
 
-            if entite.age >= TEMPS_REPRODUCTION_POISSON:
-                bebe = entite.se_reproduire()
-                self.grille.placer_entite(*ancienne_position, bebe)
-                entite._age = 0
+        # # Parcourir aléatoirement les entités et éxecuter leurs actions
+        # for x, y in toutes_les_positions:
+        #     entite = self.grille.lire_case(x, y)
+        #     if entite is None:
+        #         continue
 
-            entite.se_deplacer()
-            nouvelle_position = entite.position
+        #     ancienne_position = entite.position
+        #     if entite.age >= TEMPS_REPRODUCTION_POISSON:
+        #         bebe = entite.se_reproduire()
+        #         self.grille.placer_entite(*ancienne_position, bebe)
+        #         entite._age = 0
 
-            if self.grille.lire_case(*nouvelle_position) is None:
-                self.grille.placer_entite(*nouvelle_position, entite)
-                self.grille.placer_entite(*ancienne_position, None)
+        #     entite.se_deplacer()
+        #     nouvelle_position = entite.position
 
-        self.chronon += 1
+        #     if self.grille.lire_case(*nouvelle_position) is None:
+        #         self.grille.placer_entite(*nouvelle_position, entite)
+        #         self.grille.placer_entite(*ancienne_position, None)
 
 #fonction executer toutes les actions
 def executer_toutes_les_actions(self):
