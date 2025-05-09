@@ -1,5 +1,6 @@
+from typing import Self  # Pour le type hinting de la méthode se_reproduire
 from random import randint
-from Grille import Grille
+from CLASSES.Grille import Grille
 
 
 class EtreVivant:
@@ -56,21 +57,67 @@ class EtreVivant:
     def est_vivant(self) -> bool:
         return self._est_vivant
 
-    def se_reproduire():
-        pass
+    def se_reproduire(
+        self, liste_deplacements_disponibles: list[tuple[int, int]] = []
+    ) -> Self:
+        """
+        Se déplace et laisse un nouvel être vivant derrière lui.
+
+        Args:
+            liste_deplacements_disponibles (list[tuple[int, int]], optional): Liste des positions disponibles pour le déplacement.
+            Par défault égal à [].
+
+        Returns:
+            EtreVivant: Le nouvel être vivant
+        """
+        # Si aucune position n'est fournie, utilise la grille pour trouver les positions libres
+        if not liste_deplacements_disponibles:
+            grille = Grille()
+            liste_deplacements_disponibles = grille.cases_libres(self.position)
+
+        # Creation d'un nouveau être vivant à la même position (les classes filles créront leur propre instance)
+        nouveau_vivant = self.__class__(self.position)
+
+        # Déplacement classique
+        self.se_deplacer(liste_deplacements_disponibles)
+
+        # Réinitialisation de l'état enceinte
+        self._est_enceinte = False
+
+        return nouveau_vivant
 
     def s_alimenter():
         pass
 
-    def vieillir(self) -> None:
+    def vieillir(self, temps_reproduction: int) -> None:
         """
-        Vieillit l'entité d'un an.
+        Vieillit l'entité d'un an et gère la reproduction si l'entité est enceinte.
+
+        Args:
+            temps_reproduction (int): Temps nécessaire pour que l'entité puisse se reproduire.
+
+        Returns:
+            None
         """
         self._age += 1
-        self._temps_gestion += 1
+        if not self._est_enceinte:
+            self._temps_gestion += 1
+            if self._temps_gestion >= temps_reproduction:
+                self._est_enceinte = True
+                self._temps_gestion = 0
 
-    def mourir():
-        pass
+    def mourir(self, age_max: int) -> None:
+        """
+        Indique la mort de l'entité si elle a dépassé l'âge maximum ou si elle n'est plus vivante.
+
+        Args:
+            age_max (int): Âge maximum de l'entité.
+
+        Returns:
+            None
+        """
+        if self.age > age_max:
+            self._est_vivant = False
 
     def __repr__(self) -> str:
         """

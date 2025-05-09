@@ -1,11 +1,9 @@
 from __future__ import annotations
-import os
-import time
 import random  # Pour utiliser le mélange aléatoire des positions
 from rich.emoji import Emoji
-from Grille import Grille
-from Poisson import Poisson
-from Requin import Requin
+from CLASSES.Grille import Grille
+from CLASSES.Poisson import Poisson
+from CLASSES.Requin import Requin
 from parametres import (
     NOMBRE_LIGNE_GRILLE,
     NOMBRE_COLONNE_GRILLE,
@@ -104,8 +102,6 @@ class Monde:
 
             # Effet du temps qui passe
             entite.vieillir()
-            if isinstance(entite, Requin):
-                entite.perte_d_energie()
             entite.mourir()
 
             # Nettoyage. Note:
@@ -124,16 +120,10 @@ class Monde:
             # Nettoyage
             self.grille.nettoyer_case((x, y))
 
-    # region A SUPPRIMER
-
-    # if not entite._est_vivant:
-    #     self.grille.placer_entite(ancienne_position, None)
-    #     continue
-
     # region ACTIONS
 
     # fonction executer toutes les actions
-    def executer_toutes_les_actions(self):
+    def executer_toutes_les_actions(self) -> None:
         """
         Exécute toutes les actions des entités dans le monde.
         Les requins agissent en premier, suivis des poissons.
@@ -187,7 +177,7 @@ class Monde:
             # Si au moins une case vide
             if len(cases_vides) > 0:
                 # Requin se reproduit on place reproduction en priorité
-                if entite.age % entite.age_reproduction == 0:
+                if entite._est_enceinte:
                     bebe = entite.se_reproduire(
                         cases_vides
                     )  # entite change de position
@@ -212,6 +202,17 @@ class Monde:
                     self.grille.placer_entite(position_avant, None)
                     deja_agis.append(entite.position)
 
+            # Si aucune case vide mais au moins un poisson: -> manger
+            # sinon ne bouge pas
+            else:
+                if len(cases_poissons) > 0:
+                    cible = random.choice(cases_poissons)
+                    position_avant = entite.position
+                    entite.s_alimenter(cible)  # change de position
+                    self.grille.placer_entite(entite.position, entite)
+                    self.grille.placer_entite(position_avant, None)
+                    deja_agis.append(cible)
+
             # region poisson
             # Étape 2 : les POISSONS agissent
             # random.shuffle(toutes_les_positions)
@@ -232,9 +233,12 @@ class Monde:
                 # Trouver les cases vides
                 cases_vides = self.grille.cases_libres(position)
 
+                # si au moins une case vide
+                # en priorité, poisson se reproduit, en second poisson se déplace
+                # sinon poisson ne bouge pas
                 if len(cases_vides) > 0:
                     # Poisson se reproduit
-                    if entite.age % entite.age_reproduction == 0:
+                    if entite._est_enceinte:
                         bebe = entite.se_reproduire(cases_vides)
                         self.grille.placer_entite(position, bebe)
                         self.grille.placer_entite(entite.position, entite)
@@ -246,7 +250,6 @@ class Monde:
                         self.grille.placer_entite(entite.position, entite)
                         self.grille.placer_entite(position, None)
                         deja_agis.append(entite.position)
-            # fin de ma fonction executer toutes les actions
 
     # region AFFICHER
 
@@ -319,6 +322,16 @@ class Monde:
         else:
             print(ligne_separateur)
 
+    # region REPR
+
+    def __repr__(self) -> str:
+        """
+        Affichage terminal
+        """
+        # merci Benjamin <3
+        attrs = ", ".join(f"{key}={value!r}" for key, value in vars(self).items())
+        return f"{self.__class__.__name__}({attrs})"
+
 
 # region TEST
 
@@ -333,16 +346,18 @@ def test():
         nb_requins=NOMBRE_INITIAUX_REQUIN,
     )
 
-    for _ in range(10):
-        # Rafraichir le terminal (cls pour windows et clear pour linux)
-        os.system("cls" if os.name == "nt" else "clear")
+    print(repr(monde))
 
-        # Affichage de la grille (avec en-tete)
-        monde.afficher()
-        monde.executer_chronon()
+    # for _ in range(10):
+    #     # Rafraichir le terminal (cls pour windows et clear pour linux)
+    #     os.system("cls" if os.name == "nt" else "clear")
 
-        # Attendre 2 sec
-        time.sleep(2)
+    #     # Affichage de la grille (avec en-tete)
+    #     monde.afficher()
+    #     monde.executer_chronon()
+
+    #     # Attendre 2 sec
+    #     time.sleep(2)
 
 
 if __name__ == "__main__":
