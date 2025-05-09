@@ -48,6 +48,22 @@ class Grille:
         y = position_tuple[1] % self.colonnes
         return self.grille[x][y]
 
+    def nettoyer_case(self, position_tuple: tuple[int, int]) -> None:
+        """
+        Nettoie une case de la grille à une position donnée.
+        Si l'entité à cette position n'est pas vivante, elle est supprimée de la grille.
+        Si l'entité est vivante, elle reste dans la grille.
+
+        Args:
+            position_tuple (tuple[int, int]): Position de la case à nettoyer.
+
+        Returns:
+            None
+        """
+        entite = self.lire_case(position_tuple)
+        if not entite.est_vivant:
+            self.placer_entite(position_tuple, None)
+
     def placer_entite(self, position_tuple: tuple[int, int], entite: object) -> None:
         """
         Place une entité à une position donnée dans la grille.

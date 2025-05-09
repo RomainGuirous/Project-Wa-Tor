@@ -1,10 +1,17 @@
 from __future__ import annotations
-import parametres
 from EtreVivant import EtreVivant
 from Poisson import Poisson
+from parametres import (
+    ENERGIE_INITIALE_REQUIN,
+    AGE_REPRODUCTION_REQUIN,
+    GAIN_ENERGIE_EN_MANGEANT_POISSON,
+    LIMITE_AGE_REQUIN,
+)
+
 
 class Requin(EtreVivant):
-    __energie = parametres.ENERGIE_INITIALE_REQUIN
+    __energie = ENERGIE_INITIALE_REQUIN
+    age_reproduction = AGE_REPRODUCTION_REQUIN
 
     @property
     def energie(self) -> int:
@@ -16,11 +23,16 @@ class Requin(EtreVivant):
         Returns:
             str: affichage
         """
-        attrs = ', '.join(f"{key}={value!r}" for key, value in vars(self).items())
+        attrs = ", ".join(f"{key}={value!r}" for key, value in vars(self).items())
         return f"{self.__class__.__name__}({attrs})"
 
-    def s_alimenter(self, proie: Poisson) -> bool:
-        """se déplace à la position de la proie et
+    def perte_d_energie(self):
+        """Perd 1 en energie."""
+        self.__energie -= 1
+
+    def s_alimenter(self, position_proie: tuple[int, int]) -> bool:
+        """
+        se déplace à la position de la proie et
         l'élimine pour gagner de l'énergie
 
         Args:
@@ -30,36 +42,42 @@ class Requin(EtreVivant):
             bool: le poisson a-t-il été mangé ?
         """
         # Déplacement vers la proie
-        self._position = proie.position
+        self._position = position_proie
 
         # Mange la proie
-        self.__energie += parametres.GAIN_ENERGIE_EN_MANGEANT_POISSON
-        proie._est_vivant = False
+        self.__energie += GAIN_ENERGIE_EN_MANGEANT_POISSON
+        # proie._est_vivant = False
         return True
 
+    def se_reproduire(
+        self, liste_deplacements_disponibles: list[tuple[int, int]]
+    ) -> Requin:
 
-    def se_reproduire(self) -> Requin:
-        # Creation d'un nouveau requin à la même position
-        nouveau_requin = Requin(position=self.position)
-        
-        # Déplacement classique
-        self.se_deplacer()
+        if self.__est_enceinte:
+            # Creation d'un nouveau requin à la même position
+            nouveau_requin = Requin(self.position)
 
-        return nouveau_requin
+            # Déplacement classique
+            self.se_deplacer(liste_deplacements_disponibles)
+
+            # Réinitialisation de l'état enceinte
+            self.__est_enceinte = False
+
+            return nouveau_requin
+        else:
+            pass
 
     def mourir(self):
-        if any([self.energie <= 0,
-               self.age > parametres.LIMITE_AGE_REQUIN]):
-            self.est_vivant = False
-
+        if any([self.energie <= 0, self.age > LIMITE_AGE_REQUIN]):
+            self._est_vivant = False
 
 
 # Test conserver temporairement
 def test():
-    requin = Requin(position=(1,1))
+    requin = Requin(position=(1, 1))
     print(repr(requin))
 
-    poisson = Poisson(position=(1,0))
+    poisson = Poisson(position=(1, 0))
     print(repr(poisson))
     requin.s_alimenter(poisson)
     print(repr(requin))
@@ -78,8 +96,6 @@ def test():
 
     print(type(repr(requin)))
 
+
 if __name__ == "__main__":
     test()
-
-
-    

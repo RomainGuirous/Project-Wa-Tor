@@ -6,6 +6,8 @@ class EtreVivant:
 
     _est_vivant = True
     _age = 0
+    _temps_gestion = 0
+    _est_enceinte = False
 
     def __init__(self, position: tuple[int, int]) -> None:
         """
@@ -33,7 +35,7 @@ class EtreVivant:
             liste_deplacements_disponibles (list[tuple[int, int]], optional): Liste des positions disponibles. Par défaut -> [].
 
         Returns:
-            None
+            None: L'entité se déplace vers une position aléatoire parmi les positions disponible et met à jour sa position.
         """
         if not liste_deplacements_disponibles:
             grille = Grille()
@@ -50,6 +52,10 @@ class EtreVivant:
         """
         return self._age
 
+    @property
+    def est_vivant(self) -> bool:
+        return self._est_vivant
+
     def se_reproduire():
         pass
 
@@ -61,6 +67,7 @@ class EtreVivant:
         Vieillit l'entité d'un an.
         """
         self._age += 1
+        self._temps_gestion += 1
 
     def mourir():
         pass
