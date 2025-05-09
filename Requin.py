@@ -19,6 +19,10 @@ class Requin(EtreVivant):
         attrs = ', '.join(f"{key}={value!r}" for key, value in vars(self).items())
         return f"{self.__class__.__name__}({attrs})"
 
+    def perte_d_energie(self):
+        """Perd 1 en energie."""
+        self.__energie -= 1
+
     def s_alimenter(self, proie: Poisson) -> bool:
         """se déplace à la position de la proie et
         l'élimine pour gagner de l'énergie
@@ -50,7 +54,7 @@ class Requin(EtreVivant):
     def mourir(self):
         if any([self.energie <= 0,
                self.age > parametres.LIMITE_AGE_REQUIN]):
-            self.est_vivant = False
+            self._est_vivant = False
 
 
 
