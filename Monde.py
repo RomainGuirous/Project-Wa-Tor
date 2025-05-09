@@ -1,118 +1,92 @@
-import random  # Pour utiliser le mélange aléatoire des positions
-
-random.seed()
+import random
+import parametres
 from Poisson import Poisson
 from Requin import Requin
+from Grille import Grille
+from parametres import NOMBRE_COLONNE_GRILLE, NOMBRE_LIGNE_GRILLE
 
-
-# Classe qui représente le monde Wa-Tor
 class Monde:
-    __chronon = 0  # Compteur de temps
+    def __init__(self):
+        self.grille = Grille(NOMBRE_COLONNE_GRILLE, NOMBRE_LIGNE_GRILLE)
+        self.chronon = 0
+        self.colonnes = NOMBRE_COLONNE_GRILLE
+        self.lignes = NOMBRE_LIGNE_GRILLE
 
-    # Initialisation du monde avec une largeur (colonne) et une hauteur (ligne)
-    def __init__(self, colonne, ligne):
-        self.colonne = colonne
-        self.ligne = ligne
-
-        # Création d'une grille vide (liste de listes), avec None dans chaque case
-        self.grille = []
-        for y in range(ligne):
-            ligne_grille = []
-            for x in range(colonne):
-                ligne_grille.append(None)
-            self.grille.append(ligne_grille)
-
-    # Récupérer ce qu'il y a dans une case, avec rebouclage si on dépasse
-    def lire_case(self, x, y):
-        x = x % self.colonne
-        y = y % self.ligne
-        return self.grille[y][x]
-
-    # Placer une entité dans une case (rebouclage aussi)
-    def placer_entite(self, x, y, entite):
-        x = x % self.colonne
-        y = y % self.ligne
-        self.grille[y][x] = entite
-
-    # Donne les coordonnées des cases voisines (haut, bas, gauche, droite)
-    # def voisins(self, x, y):
-    #     directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
-    #     voisins = []
-    #     for dx, dy in directions:
-    #         nx = (x + dx) % self.colonne
-    #         ny = (y + dy) % self.ligne
-    #         voisins.append((nx, ny))
-    #     return voisins
-
-    # Place aléatoirement les poissons et les requins dans la grille
     def initialiser(self, nb_poissons, nb_requins, classe_poisson, classe_requin):
-        # On crée une liste de toutes les positions possibles
-        positions = [(x, y) for x in range(self.colonne) for y in range(self.ligne)]
-        random.shuffle(positions)  # Mélange les positions pour placer au hasard
+        toutes_les_positions = [(x, y) for x in range(self.colonnes) for y in range(self.lignes)]
+        random.shuffle(toutes_les_positions)
 
-        # Placement des poissons
         for _ in range(nb_poissons):
-            if not positions:
-                break  # plus de place
-            x, y = positions.pop()
-            poisson = Poisson((x, y))
-            self.placer_entite(x, y, poisson)
-
-        # Placement des requins
-        for _ in range(nb_requins):
-            if not positions:
+            if not toutes_les_positions:
                 break
-            x, y = positions.pop()
-            requin = Requin((x, y))
-            self.placer_entite(x, y, requin)
+            x, y = toutes_les_positions.pop()
+            poisson = classe_poisson(position=(x, y))
+            self.grille.placer_entite(x, y, poisson)
 
-    # Exécute un tour de simulation (chronon)
+        for _ in range(nb_requins):
+            if not toutes_les_positions:
+                break
+            x, y = toutes_les_positions.pop()
+            requin = classe_requin(position=(x, y))
+            self.grille.placer_entite(x, y, requin)
+
     def executer_chronon(self):
-        # On récupère toutes les positions de la grille
-        positions = [(x, y) for x in range(self.colonne) for y in range(self.ligne)]
-        random.shuffle(
-            positions
-        )  # Pour que les entités s’activent dans un ordre aléatoire
+        toutes_les_positions = [(x, y) for x in range(self.colonnes) for y in range(self.lignes)]
+        random.shuffle(toutes_les_positions)
 
-        for x, y in positions:
-            entite = self.lire_case(x, y)
-            # Si la case n’est pas vide et que l’entité a une méthode agir, on l'appelle
-            if entite is not None and hasattr(entite, "agir"):
-                entite.agir(x, y, self)
+        for x, y in toutes_les_positions:
+            entite = self.grille.lire_case(x, y)
+            if entite is None:
+                continue
 
-        self.__chronon += 1  # Le temps avance
+            ancienne_position = entite.position
+            entite.vieillir()
+            entite.mourir()
 
-    # Affiche la grille dans le terminal
+            if not entite._est_vivant:
+                self.grille.placer_entite(*ancienne_position, None)
+                continue
+
+
+            if entite.age >= parametres.TEMPS_REPRODUCTION_POISSON:
+                bebe = entite.se_reproduire()
+                self.grille.placer_entite(*ancienne_position, bebe)
+                entite._age = 0
+
+
+            entite.se_deplacer()
+            nouvelle_position = entite.position
+
+            if self.grille.lire_case(*nouvelle_position) is None:
+                self.grille.placer_entite(*nouvelle_position, entite)
+                self.grille.placer_entite(*ancienne_position, None)
+
+        self.chronon += 1
+
     def afficher(self):
-        for y in range(self.ligne):
+        for y in range(self.lignes):
             ligne = ""
-            for x in range(self.colonne):
-                entite = self.lire_case(x, y)
+            for x in range(self.colonnes):
+                entite = self.grille.lire_case(x, y)
                 if entite is None:
-                    ligne += "."  # case vide
+                    ligne += "."
                 elif entite.__class__.__name__.lower() == "poisson":
                     ligne += "P"
                 elif entite.__class__.__name__.lower() == "requin":
                     ligne += "R"
                 else:
-                    ligne += "?"  # autre (pas encore prévu)
+                    ligne += "?"
             print(ligne)
-        print("Chronon :", self.__chronon)
+        print("Chronon :", self.chronon)
         print()
 
-
 def test():
-    # Création du monde et initialisation
-    monde = Monde(colonne=20, ligne=10)
-    monde.initialiser(
-        nb_poissons=10, nb_requins=5, classe_poisson=Poisson, classe_requin=Requin
-    )
+    monde = Monde()
+    monde.initialiser(nb_poissons=10, nb_requins=5, classe_poisson=Poisson, classe_requin=Requin)
 
-    # Exécution de quelques tours de simulation
     for _ in range(10):
         monde.afficher()
         monde.executer_chronon()
-
 
 if __name__ == "__main__":
     test()
