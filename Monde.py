@@ -77,6 +77,106 @@ class Monde:
 
         self.chronon += 1
 
+#fonction executer toutes les actions
+def executer_toutes_les_actions(self):
+    #Liste de toutes les positions de la grille
+    toutes_les_positions = []
+    for col in range(self.colonnes):
+        for lig in range(self.lignes):
+            toutes_les_positions.append((col, lig))
+
+    #Mélange pour l’ordre aléatoire
+    random.shuffle(toutes_les_positions)
+
+    deja_agis = [] #pour éviter que nos entités agissent 2 fois dans un même tour
+
+    #Étape 1 : les REQUINS agissent
+    for position in toutes_les_positions:
+        entite = self.grille.lire_case(*position)
+
+        if entite is None:
+            continue
+        if entite.__class__.__name__.lower() != "requin":
+            continue
+        if position in deja_agis:
+            continue
+
+        voisins = self.grille.voisins(*position)
+
+        #Trouver les cases vides autour
+        cases_vides = []
+        for voisin in voisins:
+            if self.grille.lire_case(*voisin) is None:
+                cases_vides.append(voisin)
+
+        #Trouver les poissons autour
+        cases_poissons = []
+        for voisin in voisins:
+            voisin_entite = self.grille.lire_case(*voisin)
+            if voisin_entite is not None and voisin_entite.__class__.__name__.lower() == "poisson":
+                cases_poissons.append(voisin)
+
+        #Si au moins une case vide
+        if len(cases_vides) > 0:
+            # Requin se reproduit on place reproduction en priorité
+            if entite.age % entite.age_reproduction == 0:
+                bebe = entite.se_reproduire()
+                self.grille.placer_entite(*position, bebe)
+
+            #Sinon, s’il peut manger un poisson
+            elif len(cases_poissons) > 0:
+                cible = random.choice(cases_poissons)
+                self.grille.placer_entite(*cible, entite)
+                self.grille.placer_entite(*position, None)
+                entite.position = cible
+                entite.gagner_energie()
+                deja_agis.append(cible)
+                continue  # Requin a agi, on passe
+
+            # Sinon, déplacement simple
+            else:
+                nouvelle_position = random.choice(cases_vides)
+                self.grille.placer_entite(*nouvelle_position, entite)
+                self.grille.placer_entite(*position, None)
+                entite.position = nouvelle_position
+                deja_agis.append(nouvelle_position)
+
+    #Étape 2 mtn c'est les POISSONS agissent
+    random.shuffle(toutes_les_positions)
+
+    for position in toutes_les_positions:
+        entite = self.grille.lire_case(*position)
+
+        if entite is None:
+            continue
+        if entite.__class__.__name__.lower() != "poisson":
+            continue
+        if position in deja_agis:
+            continue
+
+        voisins = self.grille.voisins(*position)
+
+        #Trouver les cases vides
+        cases_vides = []
+        for voisin in voisins:
+            if self.grille.lire_case(*voisin) is None:
+                cases_vides.append(voisin)
+
+        if len(cases_vides) > 0:
+            #Poisson se reproduit
+            if entite.age % entite.age_reproduction == 0:
+                bebe = entite.se_reproduire()
+                self.grille.placer_entite(*position, bebe)
+            else:
+                nouvelle_position = random.choice(cases_vides)
+                self.grille.placer_entite(*nouvelle_position, entite)
+                self.grille.placer_entite(*position, None)
+                entite.position = nouvelle_position
+                deja_agis.append(nouvelle_position)
+#fin de ma fonction executer toutes les actions
+
+
+
     def afficher(self):
         for y in range(self.lignes):
             ligne_separateur = "+"
