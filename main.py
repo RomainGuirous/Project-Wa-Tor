@@ -1,25 +1,24 @@
-from Monde import Monde
-from parametres import NOMBRE_INITIAUX_POISSON, NOMBRE_INITIAUX_REQUIN
-from Poisson import Poisson
-from Requin import Requin
+from CLASSES.Monde import Monde
 from time import sleep
 from os import system, name as system_name
 
 
-def main():
-    """Lancement de la simulation Wa-Tor (auteurs: Sanae, Romain et César)"""
+def main() -> None:
+    """
+    Lancement de la simulation Wa-Tor (auteurs: Sanae, Romain et César)
+    Cette fonction initialise le monde, affiche l'état initial et exécute les chronons de la simulation.
+    Elle rafraîchit l'affichage du terminal à chaque itération et gère le temps d'attente entre les étapes de la simulation.
+    La simulation s'arrête après 10 chronons.
 
+    Returns:
+        None
+    """
     # Rafraichir le terminal (cls pour windows et clear pour linux)
     system("cls" if system_name == "nt" else "clear")
 
     # Initialisation de Wa-Tor
     monde_wa_tor = Monde()
-    monde_wa_tor.initialiser(
-        nb_poissons=NOMBRE_INITIAUX_POISSON,
-        nb_requins=NOMBRE_INITIAUX_REQUIN,
-        classe_poisson=Poisson,
-        classe_requin=Requin,
-    )
+    monde_wa_tor.initialiser()
     monde_wa_tor.afficher()
 
     # Ecoulement du temps
