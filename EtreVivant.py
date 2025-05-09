@@ -48,6 +48,10 @@ class EtreVivant:
     def age(self) -> int:
         return self._age
 
+    @property
+    def est_vivant(self) -> bool:
+        return self._est_vivant
+
     def se_reproduire():
         pass
 

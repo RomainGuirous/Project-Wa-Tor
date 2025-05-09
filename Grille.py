@@ -18,6 +18,18 @@ class Grille:
         y = y % self.lignes
         return self.grille[y][x]
 
+    def nettoyer_case(self, x: int, y: int):
+        """Remplace l'entite de la case par None si celle-ci
+        est morte selon son paramètre est_vivant.
+
+        Args:
+            x (int): Première coordonnée
+            y (int): Deuxième coordonnée
+        """
+        entite = self.lire_case(x, y)
+        if not entite.est_vivant:
+            self.placer_entite(x, y, None)
+
     def placer_entite(self, x, y, entite):
         x = x % self.colonnes
         y = y % self.lignes
@@ -32,5 +44,6 @@ class Grille:
             liste_voisins.append((nx, ny))
         return liste_voisins
 
-Grille_demo = Grille(5,5)
+
+Grille_demo = Grille(5, 5)
 print(Grille_demo.liste_grille_vide())
