@@ -83,34 +83,6 @@ class Monde:
             # Nettoyage
             self.grille.nettoyer_case(x, y)
 
-    # TODO: Sanae implemente cette partie
-    def executer_toutes_les_actions(self):
-        pass
-        # # Obtenir une liste aléatoires de toutes les positions dans la grille
-        # toutes_les_positions = [
-        #     (x, y) for x in range(self.colonnes) for y in range(self.lignes)
-        # ]
-        # random.shuffle(toutes_les_positions)
-
-        # # Parcourir aléatoirement les entités et éxecuter leurs actions
-        # for x, y in toutes_les_positions:
-        #     entite = self.grille.lire_case(x, y)
-        #     if entite is None:
-        #         continue
-
-        #     ancienne_position = entite.position
-        #     if entite.age >= TEMPS_REPRODUCTION_POISSON:
-        #         bebe = entite.se_reproduire()
-        #         self.grille.placer_entite(*ancienne_position, bebe)
-        #         entite._age = 0
-
-        #     entite.se_deplacer()
-        #     nouvelle_position = entite.position
-
-        #     if self.grille.lire_case(*nouvelle_position) is None:
-        #         self.grille.placer_entite(*nouvelle_position, entite)
-        #         self.grille.placer_entite(*ancienne_position, None)
-
 #fonction executer toutes les actions
 def executer_toutes_les_actions(self):
     #Liste de toutes les positions de la grille
@@ -130,14 +102,14 @@ def executer_toutes_les_actions(self):
 
         if entite is None:
             continue
-        if entite.__class__.__name__.lower() != "requin":
+        if not isinstance(entite,Requin): 
             continue
         if position in deja_agis:
             continue
 
         voisins = self.grille.voisins(*position)
 
-        #Trouver les cases vides autour
+        #Trouver les cases vides autour #Voir fonction déjà existante
         cases_vides = []
         for voisin in voisins:
             if self.grille.lire_case(*voisin) is None:
@@ -165,9 +137,10 @@ def executer_toutes_les_actions(self):
                 entite.position = cible
                 entite.gagner_energie()
                 deja_agis.append(cible)
-                continue  # Requin a agi, on passe
+                continue  #Requin a agi, on passe
+            #Prévoir d'ajouter méthode s'alimenter 
 
-            # Sinon, déplacement simple
+            #Sinon, déplacement simple
             else:
                 nouvelle_position = random.choice(cases_vides)
                 self.grille.placer_entite(*nouvelle_position, entite)
@@ -183,7 +156,7 @@ def executer_toutes_les_actions(self):
 
         if entite is None:
             continue
-        if entite.__class__.__name__.lower() != "poisson":
+        if not isinstance(entite,Poisson): 
             continue
         if position in deja_agis:
             continue
@@ -210,7 +183,6 @@ def executer_toutes_les_actions(self):
 #fin de ma fonction executer toutes les actions
 
 
-
     def afficher(self):
         for y in range(self.lignes):
             ligne_separateur = "+"
@@ -225,11 +197,11 @@ def executer_toutes_les_actions(self):
                     # ligne += Emoji.replace(":droplet:")  # case vide 💧
                     # ligne += Emoji.replace(":large_blue_diamond:")  # case vide 🔷
                     # ligne += Emoji.replace(":sweat_droplets:")  # case vide 💦
-                elif entite.__class__.__name__.lower() == "poisson":
+                elif isinstance(entite,Poisson): 
                     # ligne += Emoji.replace(":fish:") # poisson 🐟
                     ligne += Emoji.replace(":tropical_fish:")  # poisson tropical 🐠
                     # ligne += Emoji.replace(":blowfish:") # poisson ballon 🐡
-                elif entite.__class__.__name__.lower() == "requin":
+                elif isinstance(entite,Requin): 
                     ligne += Emoji.replace(":shark:")  # requin 🦈
                 else:
                     ligne += Emoji.replace(
