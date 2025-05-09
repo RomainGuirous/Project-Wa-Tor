@@ -63,7 +63,7 @@ class Monde:
 
             # Effet du temps qui passe
             entite.vieillir()
-            if type(entite) == Requin:
+            if isinstance(entite, Requin):
                 entite.perte_d_energie()
             entite.mourir()
 
