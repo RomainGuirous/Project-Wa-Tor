@@ -1,18 +1,31 @@
 from __future__ import annotations
-import parametres
+from parametres import (
+    ENERGIE_INITIALE_REQUIN,
+    ENERGIE_MAX_REQUIN,
+    GAIN_ENERGIE_EN_MANGEANT_POISSON,
+    LIMITE_AGE_REQUIN,
+)
 from EtreVivant import EtreVivant
 from Poisson import Poisson
 
 
 class Requin(EtreVivant):
-    __energie = parametres.ENERGIE_INITIALE_REQUIN
+    __energie = ENERGIE_INITIALE_REQUIN
 
     @property
     def energie(self) -> int:
         return self.__energie
 
+    def __str__(self) -> str:
+        """Représentation officielle
+
+        Returns:
+            str: affichage
+        """
+        return super(Requin, self).__str__() + f"energie={self.__energie}\n"
+
     def __repr__(self) -> str:
-        """Affichage terminal
+        """Représentation officielle
 
         Returns:
             str: affichage
@@ -38,7 +51,9 @@ class Requin(EtreVivant):
         self._position = proie.position
 
         # Mange la proie
-        self.__energie += parametres.GAIN_ENERGIE_EN_MANGEANT_POISSON
+        self.__energie += min(
+            GAIN_ENERGIE_EN_MANGEANT_POISSON, ENERGIE_MAX_REQUIN - self.__energie
+        )
         proie._est_vivant = False
         return True
 
@@ -52,33 +67,39 @@ class Requin(EtreVivant):
         return nouveau_requin
 
     def mourir(self):
-        if any([self.energie <= 0, self.age > parametres.LIMITE_AGE_REQUIN]):
+        if any([self.energie <= 0, self.age > LIMITE_AGE_REQUIN]):
             self._est_vivant = False
 
 
 # Test conserver temporairement
 def test():
     requin = Requin(position=(1, 1))
-    print(repr(requin))
+    print(str(requin))
 
     poisson = Poisson(position=(1, 0))
-    print(repr(poisson))
+    print(str(poisson))
     requin.s_alimenter(poisson)
-    print(repr(requin))
-    print(repr(poisson))
+    print(str(requin))
+    print(str(poisson))
+
+    poisson = Poisson(position=(2, 0))
+    print(str(poisson))
+    requin.s_alimenter(poisson)
+    print(str(requin))
+    print(str(poisson))
 
     nouveau_requin = requin.se_reproduire()
-    print(repr(requin))
-    print(repr(nouveau_requin))
+    print(str(requin))
+    print(str(nouveau_requin))
 
     nouveau_requin.__energie = 0
     nouveau_requin.mourir()
-    print(repr(nouveau_requin))
+    print(str(nouveau_requin))
     requin._age = 100
     requin.mourir()
-    print(repr(requin))
+    print(str(requin))
 
-    print(type(repr(requin)))
+    print(type(str(requin)))
 
 
 if __name__ == "__main__":

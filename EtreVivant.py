@@ -10,6 +10,14 @@ class EtreVivant:
     def __init__(self, position: tuple[int, int]) -> None:
         self._position = position
 
+    def __str__(self) -> str:
+        """Représentation officielle
+
+        Returns:
+            str: affichage
+        """
+        return f"est_vivant={self._est_vivant}\n" + f"age={self._age}\n" + f"position={self._position}\n"
+
     @property
     def position(self) -> tuple[int, int]:
         return self._position
