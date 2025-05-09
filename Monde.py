@@ -33,16 +33,16 @@ class Monde:
         for _ in range(nb_poissons):
             if not toutes_les_positions:
                 break
-            x, y = toutes_les_positions.pop()
+            (x, y) = toutes_les_positions.pop()
             poisson = classe_poisson(position=(x, y))
-            self.grille.placer_entite(x, y, poisson)
+            self.grille.placer_entite((x, y), poisson)
 
         for _ in range(nb_requins):
             if not toutes_les_positions:
                 break
-            x, y = toutes_les_positions.pop()
+            (x, y) = toutes_les_positions.pop()
             requin = classe_requin(position=(x, y))
-            self.grille.placer_entite(x, y, requin)
+            self.grille.placer_entite((x, y), requin)
 
     def executer_chronon(self):
         toutes_les_positions = [
@@ -51,7 +51,7 @@ class Monde:
         random.shuffle(toutes_les_positions)
 
         for x, y in toutes_les_positions:
-            entite = self.grille.lire_case(x, y)
+            entite = self.grille.lire_case((x, y))
             if entite is None:
                 continue
 
@@ -60,20 +60,20 @@ class Monde:
             entite.mourir()
 
             if not entite._est_vivant:
-                self.grille.placer_entite(*ancienne_position, None)
+                self.grille.placer_entite(ancienne_position, None)
                 continue
 
             if entite.age >= TEMPS_REPRODUCTION_POISSON:
                 bebe = entite.se_reproduire()
-                self.grille.placer_entite(*ancienne_position, bebe)
+                self.grille.placer_entite(ancienne_position, bebe)
                 entite._age = 0
 
             entite.se_deplacer()
             nouvelle_position = entite.position
 
-            if self.grille.lire_case(*nouvelle_position) is None:
-                self.grille.placer_entite(*nouvelle_position, entite)
-                self.grille.placer_entite(*ancienne_position, None)
+            if self.grille.lire_case(nouvelle_position) is None:
+                self.grille.placer_entite(nouvelle_position, entite)
+                self.grille.placer_entite(ancienne_position, None)
 
         self.chronon += 1
 
@@ -82,7 +82,7 @@ class Monde:
             ligne_separateur = "+"
             ligne = "|"
             for x in range(self.colonnes):
-                entite = self.grille.lire_case(x, y)
+                entite = self.grille.lire_case((x, y))
                 if entite is None:
                     # ligne += Emoji.replace(":water_wave:")  # case vide 🌊
                     ligne += Emoji.replace(":blue_square:")  # case vide 🟦

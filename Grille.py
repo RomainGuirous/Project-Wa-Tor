@@ -1,10 +1,12 @@
+from parametres import NOMBRE_LIGNE_GRILLE, NOMBRE_COLONNE_GRILLE
+
 class Grille:
-    def __init__(self, colonnes, lignes):
+    def __init__(self, colonnes: int = NOMBRE_COLONNE_GRILLE, lignes: int = NOMBRE_LIGNE_GRILLE) -> None:
         self.colonnes = colonnes
         self.lignes = lignes
         self.grille = self.liste_grille_vide()
 
-    def liste_grille_vide(self):
+    def liste_grille_vide(self) -> list[list]:
         liste_resultat = []
         for y in range(self.lignes):
             ligne = []
@@ -13,24 +15,35 @@ class Grille:
             liste_resultat.append(ligne)
         return liste_resultat
 
-    def lire_case(self, x, y):
-        x = x % self.colonnes
-        y = y % self.lignes
-        return self.grille[y][x]
+    def lire_case(self, position_tuple: tuple[int, int]) -> any:
+        x = position_tuple[0] % self.lignes
+        y = position_tuple[1] % self.colonnes
+        return self.grille[x][y]
 
-    def placer_entite(self, x, y, entite):
-        x = x % self.colonnes
-        y = y % self.lignes
-        self.grille[y][x] = entite
+    def placer_entite(self, position_tuple: tuple[int, int], entite: object) -> None:
+        x = position_tuple[0] % self.lignes
+        y = position_tuple[1] % self.colonnes
+        self.grille[x][y] = entite
 
-    def voisins(self, x, y):
+    def cases_voisines(self, position_tuple: tuple[int, int]) -> list[tuple[int, int]]:
         directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
         liste_voisins = []
-        for dx, dy in directions:
-            nx = (x + dx) % self.colonnes
-            ny = (y + dy) % self.lignes
-            liste_voisins.append((nx, ny))
+        for x_direction, y_direction in directions:
+            x = (position_tuple[0] + x_direction) % self.colonnes
+            y = (position_tuple[1] + y_direction) % self.lignes
+            liste_voisins.append((x, y))
         return liste_voisins
+    
+    def cases_libres(self, position_tuple: tuple[int, int]):
+        liste_cases_libres = []
+        liste_cases_voisines = self.cases_voisines(position_tuple)
+        for case in liste_cases_voisines:
+            if self.lire_case(case) == None:
+                liste_cases_libres.append(case)
+        return liste_cases_libres
 
-Grille_demo = Grille(5,5)
-print(Grille_demo.liste_grille_vide())
+
+grille_demo = Grille(5,5)
+grille_demo.placer_entite((2,3),"P")
+grille_demo.placer_entite((4,3),"P")
+print(grille_demo.cases_libres((3,3)))
