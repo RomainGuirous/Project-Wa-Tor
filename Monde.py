@@ -1,3 +1,4 @@
+from __future__ import annotations
 import os
 import time
 import random  # Pour utiliser le mélange aléatoire des positions
@@ -18,13 +19,36 @@ random.seed()
 
 # Classe qui représente le monde Wa-Tor
 class Monde:
-    def __init__(self):
+    def __init__(self) -> None:
+        """
+        Constructeur de la classe Monde.
+        Initialise la grille du monde et le chronon.
+        """
         self.grille = Grille(NOMBRE_COLONNE_GRILLE, NOMBRE_LIGNE_GRILLE)
         self.chronon = 0
         self.colonnes = NOMBRE_COLONNE_GRILLE
         self.lignes = NOMBRE_LIGNE_GRILLE
 
-    def initialiser(self, nb_poissons, nb_requins, classe_poisson, classe_requin):
+    def initialiser(
+        self,
+        classe_poisson: Poisson,
+        classe_requin: Requin,
+        nb_poissons: int = NOMBRE_INITIAUX_POISSON,
+        nb_requins: int = NOMBRE_INITIAUX_REQUIN,
+    ) -> None:
+        """
+        Initialise le monde avec un nombre donné de poissons et de requins.
+        Les entités sont placées aléatoirement sur la grille.
+
+        Args:
+            nb_poissons (int): Nombre de poissons à placer.
+            nb_requins (int): Nombre de requins à placer.
+            classe_poisson (Poisson): Classe du poisson.
+            classe_requin (Requin): Classe du requin.
+
+        Returns:
+            None
+        """
         toutes_les_positions = [
             (x, y) for x in range(self.colonnes) for y in range(self.lignes)
         ]
@@ -44,7 +68,15 @@ class Monde:
             requin = classe_requin(position=(x, y))
             self.grille.placer_entite((x, y), requin)
 
-    def executer_chronon(self):
+    def executer_chronon(self) -> None:
+        """
+        Exécute un chronon du monde Wa-Tor.
+        Chaque entité vieillit, se déplace et se reproduit si nécessaire.
+        Les entités sont traitées dans un ordre aléatoire pour simuler le comportement du monde.
+
+        Returns:
+            None
+        """
         toutes_les_positions = [
             (x, y) for x in range(self.colonnes) for y in range(self.lignes)
         ]
@@ -77,7 +109,16 @@ class Monde:
 
         self.chronon += 1
 
-    def afficher(self):
+    def afficher(self) -> None:
+        """
+        Affiche la grille du monde avec les entités présentes.
+        Chaque case est représentée par un emoji correspondant à l'entité présente.
+        Les cases vides sont représentées par un emoji d'eau.
+        Les poissons et requins sont représentés par leurs emojis respectifs.
+
+        Returns:
+            None: Affiche la grille dans le terminal.
+        """
         for y in range(self.lignes):
             ligne_separateur = "+"
             ligne = "|"
@@ -142,10 +183,10 @@ def test():
     # Création du monde et initialisation
     monde = Monde()
     monde.initialiser(
-        nb_poissons=NOMBRE_INITIAUX_POISSON,
-        nb_requins=NOMBRE_INITIAUX_REQUIN,
         classe_poisson=Poisson,
         classe_requin=Requin,
+        nb_poissons=NOMBRE_INITIAUX_POISSON,
+        nb_requins=NOMBRE_INITIAUX_REQUIN,
     )
 
     for _ in range(10):
