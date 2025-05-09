@@ -49,7 +49,7 @@ class Monde:
 
         # Incrément du chronon
         self.chronon += 1
-    
+
         # Obtenir une liste aléatoires de toutes les positions dans la grille
         toutes_les_positions = [
             (x, y) for x in range(self.colonnes) for y in range(self.lignes)
@@ -63,7 +63,8 @@ class Monde:
 
             # Effet du temps qui passe
             entite.vieillir()
-            if type(entite) == Requin: entite.perte_d_energie()
+            if type(entite) == Requin:
+                entite.perte_d_energie()
             entite.mourir()
 
             # Nettoyage. Note:
@@ -73,7 +74,7 @@ class Monde:
 
         self.executer_toutes_les_actions()
 
-         # Parcourir les entités pour nettoyer les morts
+        # Parcourir les entités pour nettoyer les morts
         for x, y in toutes_les_positions:
             entite = self.grille.lire_case(x, y)
             if entite is None:
@@ -82,8 +83,7 @@ class Monde:
             # Nettoyage
             self.grille.nettoyer_case(x, y)
 
-
-    #TODO: Sanae implemente cette partie
+    # TODO: Sanae implemente cette partie
     def executer_toutes_les_actions(self):
         pass
         # # Obtenir une liste aléatoires de toutes les positions dans la grille

@@ -17,7 +17,7 @@ class Grille:
         x = x % self.colonnes
         y = y % self.lignes
         return self.grille[y][x]
-    
+
     def nettoyer_case(self, x: int, y: int):
         """Remplace l'entite de la case par None si celle-ci
         est morte selon son paramètre est_vivant.
@@ -44,5 +44,6 @@ class Grille:
             liste_voisins.append((nx, ny))
         return liste_voisins
 
-Grille_demo = Grille(5,5)
+
+Grille_demo = Grille(5, 5)
 print(Grille_demo.liste_grille_vide())
