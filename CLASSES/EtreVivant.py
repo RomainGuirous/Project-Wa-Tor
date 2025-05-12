@@ -126,3 +126,16 @@ class EtreVivant:
         # merci Benjamin <3
         attrs = ", ".join(f"{key}={value!r}" for key, value in vars(self).items())
         return f"{self.__class__.__name__}({attrs})"
+
+    def __str__(self) -> str:
+        """Représentation humainement lisible.
+
+        Returns:
+            str: affichage
+        """
+        return f"est_vivant={self._est_vivant}\n" + \
+               f"age={self.age}\n" + \
+               f"position={self.position}\n" + \
+               f"temps gestion={self._temps_gestion}\n" + \
+               f"est_enceinte={self._est_enceinte}\n"
+
