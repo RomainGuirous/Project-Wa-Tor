@@ -1,3 +1,12 @@
+############################################################
+# Pour permettre de lancer les tests...
+#######################################
+import sys
+from pathlib import Path
+
+# Ajouter le répertoire parent au PYTHONPATH
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+############################################################
 from parametres import NOMBRE_LIGNE_GRILLE, NOMBRE_COLONNE_GRILLE
 
 
@@ -90,12 +99,13 @@ class Grille:
             list[tuple[int, int]]: Liste des positions des cases voisines.
         """
         directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
-        liste_voisins = []
+        liste_voisins = set()
         for x_direction, y_direction in directions:
             x = (position_tuple[0] + x_direction) % self.colonnes
             y = (position_tuple[1] + y_direction) % self.lignes
-            liste_voisins.append((x, y))
-        return liste_voisins
+            if (x, y) != position_tuple:
+                liste_voisins.update([(x, y)])
+        return list(liste_voisins)
 
     def cases_libres(self, position_tuple: tuple[int, int]):
         """
@@ -115,7 +125,19 @@ class Grille:
         return liste_cases_libres
 
 
-grille_demo = Grille(5, 5)
-grille_demo.placer_entite((2, 3), "P")
-grille_demo.placer_entite((4, 3), "P")
-print(grille_demo.cases_libres((3, 3)))
+# region TEST
+def test():
+    grille_demo = Grille(5, 1)
+    print(grille_demo.cases_voisines((2, 0)))
+
+    grille_demo = Grille(5, 3)
+    print(grille_demo.cases_voisines((2, 0)))
+
+    grille_demo = Grille(5, 5)
+    grille_demo.placer_entite((2, 3), "P")
+    grille_demo.placer_entite((4, 3), "P")
+    print(grille_demo.cases_libres((3, 3)))
+
+
+if __name__ == "__main__":
+    test()
