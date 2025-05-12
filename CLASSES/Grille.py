@@ -1,4 +1,5 @@
 from parametres import NOMBRE_LIGNE_GRILLE, NOMBRE_COLONNE_GRILLE
+from typing import Type #cela correspond à un type classe
 
 
 class Grille:
@@ -113,6 +114,15 @@ class Grille:
             if self.lire_case(case) == None:
                 liste_cases_libres.append(case)
         return liste_cases_libres
+    
+    def nombre_entite(self, entite: Type) -> int:
+        nbr_entite = 0
+        for x in range(self.colonnes):
+            for y in range(self.lignes):
+                if  isinstance(self.lire_case((x,y)), entite):
+                    nbr_entite += 1
+        return nbr_entite
+
 
 
 grille_demo = Grille(5, 5)

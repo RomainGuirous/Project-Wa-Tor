@@ -101,6 +101,7 @@ class Monde:
         # Obtenir une liste aléatoires de toutes les positions dans la grille
         toutes_les_positions = self.toutes_les_positions()
 
+
         # Parcourir les entités et éxecuter les effets du temps
         for x, y in toutes_les_positions:
             entite = self.grille.lire_case((x, y))
@@ -126,6 +127,8 @@ class Monde:
 
             # Nettoyage
             self.grille.nettoyer_case((x, y))
+
+        
 
     # region ACTIONS
 
@@ -323,6 +326,8 @@ class Monde:
                 print("| WA-TOR WORLD |")
                 print("+--------------+\n")
                 print(f"Chronon: {self.chronon}\n")
+                print(f" Nombre poisson: {self.grille.nombre_entite(Poisson)}")
+                print(f" Nombre requin: {self.grille.nombre_entite(Requin)}")
 
             print(ligne_separateur)
             print(ligne)

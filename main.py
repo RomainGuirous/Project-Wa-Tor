@@ -1,4 +1,8 @@
 from CLASSES.Monde import Monde
+from CLASSES.Grille import Grille
+from CLASSES.Poisson import Poisson
+from CLASSES.Requin import Requin
+from graphique import bo_graphique
 from time import sleep
 from os import system, name as system_name
 from parametres import CLEAR_TERMINAL, TEMPS_RAFRAICHISSEMENT, CHRONON_MAX
@@ -25,14 +29,36 @@ def main() -> None:
 
     # Ecoulement du temps
     compteur = 0
+    liste_nombre_poissons = []
+    liste_nombre_requins = []
+    liste_chronons = []
     while True:
         # Rafraichir le terminal (cls pour windows et clear pour linux)
-        if CLEAR_TERMINAL:
-            system("cls" if system_name == "nt" else "clear")
+        # if CLEAR_TERMINAL:
+        #     system("cls" if system_name == "nt" else "clear")
 
         monde_wa_tor.executer_chronon()
         monde_wa_tor.afficher()
-        sleep(TEMPS_RAFRAICHISSEMENT)
+        # sleep(TEMPS_RAFRAICHISSEMENT)
+
+
+
+
+        if monde_wa_tor.chronon == 0 or monde_wa_tor.chronon % 5 == 0:
+
+        #partie graphique
+            liste_chronons.append(monde_wa_tor.chronon)
+
+            nbr_poisson = monde_wa_tor.grille.nombre_entite(Poisson)
+            liste_nombre_poissons.append(nbr_poisson)
+
+            nbr_requin = monde_wa_tor.grille.nombre_entite(Requin)
+            liste_nombre_requins.append(nbr_requin)
+
+            dict_entite = {'poisson': liste_nombre_poissons, 'requin': liste_nombre_requins}
+            bo_graphique(liste_chronons, dict_entite)
+
+
 
         compteur += 1
         if compteur >= CHRONON_MAX:
