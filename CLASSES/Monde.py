@@ -20,6 +20,7 @@ from parametres import (
     NOMBRE_INITIAUX_POISSON,
     NOMBRE_INITIAUX_REQUIN,
     TEMPS_RAFRAICHISSEMENT,
+    ENERGIE_FAIM_REQUIN
 )
 from emojis import symbole_case_vide, symbole_poisson, symbole_requin, symbole_inconnu
 
@@ -202,65 +203,52 @@ class Monde:
         for position in toutes_les_positions:
             entite = self.grille.lire_case(position)
 
-            if any(
-                [entite is None, not isinstance(entite, Requin), position in deja_agis]
-            ):
-                continue
+            if all([isinstance(entite, Requin) and not position in deja_agis]):
+                # Liste des positions des cases voisines (total et selon type)
+                positions_voisines = self.grille.cases_voisines(position)
+                positions_voisines_vides = self.grille.cases_voisines_libres(position, positions_voisines)
+                positions_voisines_poissons = self.grille.cases_voisines_entites(Poisson, position, positions_voisines)
 
-            # Liste des positions des cases voisines
-            voisins = self.grille.cases_voisines(position)
+                # S'il y a au moins une case vide autour:
+                if len(positions_voisines_vides) > 0:
+                    # Un requin se reproduit en priorité
+                    if entite._est_enceinte:
+                        bebe = entite.se_reproduire(positions_voisines_vides)
+                        # entite a changé de position
+                        self.grille.placer_entite(position, bebe)
+                        self.grille.placer_entite(entite.position, entite)
+                        deja_agis.append(entite.position)
 
-            # Trouver les cases vides autour
-            cases_vides = self.grille.cases_libres(position)
+                    # Sinon, s’il peut manger un poisson et s'il a faim, il le fait
+                    elif len(positions_voisines_poissons) > 0 and entite.energie <= ENERGIE_FAIM_REQUIN:
+                        cible = random.choice(positions_voisines_poissons)
+                        position_avant = entite.position
+                        entite.s_alimenter(cible)  # change de position
+                        self.grille.placer_entite(entite.position, entite)
+                        self.grille.placer_entite(position_avant, None)
+                        deja_agis.append(cible)
 
-            # Trouver les poissons autour
-            cases_poissons = [
-                voisin
-                for voisin in voisins
-                if self.grille.lire_case(voisin)
-                and isinstance(self.grille.lire_case(voisin), Poisson)
-            ]
+                    # Sinon, il se déplace aléatoirement
+                    else:
+                        position_avant = entite.position
+                        entite.se_deplacer(positions_voisines_vides)  # change de position
+                        self.grille.placer_entite(entite.position, entite)
+                        self.grille.placer_entite(position_avant, None)
+                        deja_agis.append(entite.position)
 
-            # S'il y a au moins une case vide autour:
-            if len(cases_vides) > 0:
-                # Un requin se reproduit en priorité
-                if entite._est_enceinte:
-                    bebe = entite.se_reproduire(cases_vides)
-                    # entite a changé de position
-                    self.grille.placer_entite(position, bebe)
-                    self.grille.placer_entite(entite.position, entite)
-                    deja_agis.append(entite.position)
-
-                # Sinon, s’il peut manger un poisson, il le fait
-                elif len(cases_poissons) > 0:
-                    cible = random.choice(cases_poissons)
-                    position_avant = entite.position
-                    entite.s_alimenter(cible)  # change de position
-                    self.grille.placer_entite(entite.position, entite)
-                    self.grille.placer_entite(position_avant, None)
-                    deja_agis.append(cible)
-
-                # Sinon, il se déplace aléatoirement
+                # S'il n'y a aucune case vide autour...
                 else:
-                    position_avant = entite.position
-                    entite.se_deplacer(cases_vides)  # change de position
-                    self.grille.placer_entite(entite.position, entite)
-                    self.grille.placer_entite(position_avant, None)
-                    deja_agis.append(entite.position)
+                    # ...mais qu'il y a au moins un poisson:
+                    # Un requin mange en priorité
+                    if len(positions_voisines_poissons) > 0 and entite.energie <= ENERGIE_FAIM_REQUIN:
+                        cible = random.choice(positions_voisines_poissons)
+                        position_avant = entite.position
+                        entite.s_alimenter(cible)  # change de position
+                        self.grille.placer_entite(entite.position, entite)
+                        self.grille.placer_entite(position_avant, None)
+                        deja_agis.append(cible)
 
-            # S'il n'y a aucune case vide autour...
-            else:
-                # ...mais qu'il y a au moins un poisson:
-                # Un requin mange en priorité
-                if len(cases_poissons) > 0:
-                    cible = random.choice(cases_poissons)
-                    position_avant = entite.position
-                    entite.s_alimenter(cible)  # change de position
-                    self.grille.placer_entite(entite.position, entite)
-                    self.grille.placer_entite(position_avant, None)
-                    deja_agis.append(cible)
-
-                # Sinon il ne bouge pas (bloqué)
+                    # Sinon il ne bouge pas (bloqué)
 
     # region Méthode: executer_toutes_les_actions_des_poissons
     def executer_toutes_les_actions_des_poissons(
@@ -287,7 +275,7 @@ class Monde:
             # voisins = self.grille.cases_voisines(position)
 
             # Trouver les cases vides
-            cases_vides = self.grille.cases_libres(position)
+            cases_vides = self.grille.cases_voisines_libres(position)
 
             # S'il y a au moins une case vide autour:
             if len(cases_vides) > 0:
@@ -331,6 +319,7 @@ class Monde:
                     ligne += symbole_poisson()
                 elif isinstance(entite, Requin):
                     ligne += symbole_requin()
+                    debug = str(entite)
                 else:
                     ligne += symbole_inconnu()
                 ligne_separateur += "--+"
@@ -347,6 +336,7 @@ class Monde:
         else:
             print(ligne_separateur)
 
+        print(debug)
         sleep(TEMPS_RAFRAICHISSEMENT)
 
     # region Méthode __repr__
@@ -361,6 +351,23 @@ class Monde:
 
 # region TEST
 def test():
+    # Test de grille ici pour éviter les dependances circulaires
+    grille_demo = Grille(5, 1)
+    print("Cases voisines (monde 1D)")
+    print(grille_demo.cases_voisines((2, 0)))
+
+    grille_demo = Grille(5, 3)
+    print("Cases voisines (monde 2D)")
+    print(grille_demo.cases_voisines((2, 0)))
+
+    grille_demo = Grille(5, 5)
+    grille_demo.placer_entite((2, 3), Poisson((2,3)))
+    grille_demo.placer_entite((4, 3), Poisson((4,3)))
+    print("Cases voisines vides (monde 2D)")
+    print(grille_demo.cases_voisines_libres((3, 3)))
+    print("Cases voisines poissons (monde 2D)")
+    print(grille_demo.cases_voisines_entites(Poisson, (3, 3)))
+
     # Création du monde et initialisation
     monde = Monde()
     monde.initialiser(
