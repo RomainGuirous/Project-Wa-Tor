@@ -11,7 +11,6 @@ sys.path.append(str(Path(__file__).resolve().parent.parent))
 ############################################################
 from time import sleep
 import random
-from rich.emoji import Emoji
 from CLASSES.Grille import Grille
 from CLASSES.Poisson import Poisson
 from CLASSES.Requin import Requin
@@ -22,6 +21,7 @@ from parametres import (
     NOMBRE_INITIAUX_REQUIN,
     TEMPS_RAFRAICHISSEMENT,
 )
+from emojis import symbole_case_vide, symbole_poisson, symbole_requin, symbole_inconnu
 
 random.seed()
 
@@ -61,11 +61,11 @@ class Monde:
             None
         """
         # Vérification des paramètres d'entrée
-        if (nb_poissons < 0):
+        if nb_poissons < 0:
             raise ValueError("Le nombre de poissons initial doit être positif.")
-        if (nb_requins < 0):
+        if nb_requins < 0:
             raise ValueError("Le nombre de requins initial doit être positif.")
-        self.est_suffisamment_grand(nb_poissons+nb_requins)
+        self.est_suffisamment_grand(nb_poissons + nb_requins)
 
         # Liste aléatoires de toutes les positions de la grille
         toutes_les_positions = self.toutes_les_positions()
@@ -92,9 +92,14 @@ class Monde:
             raise ValueError(
                 f"Le nombre initial de poissons et de requins ({nb_entites}) est trop grand pour la taille de grille\nTaille de la grille: {self.lignes}X{self.colonnes}"
             )
-        
+
     # region Méthode:placement_entites
-    def placer_une_espece(self, classe_espece: Poisson | Requin, nb_entites: int, positions_possibles: list[tuple[int, int]]) -> None:
+    def placer_une_espece(
+        self,
+        classe_espece: Poisson | Requin,
+        nb_entites: int,
+        positions_possibles: list[tuple[int, int]],
+    ) -> None:
         """Placer un nombre prédéfini d'entités dans la grille pour une certaine espèce.
 
         Args:
@@ -166,7 +171,7 @@ class Monde:
         """
         Exécute toutes les actions des entités dans le monde.
         Les requins agissent en premier, suivis des poissons.
-        
+
         Returns:
             None
         """
@@ -181,7 +186,10 @@ class Monde:
         self.executer_toutes_les_actions_des_requins(toutes_les_positions, deja_agis)
         self.executer_toutes_les_actions_des_poissons(toutes_les_positions, deja_agis)
 
-    def executer_toutes_les_actions_des_requins(self, toutes_les_positions:list[tuple[int,int]], deja_agis: list) -> None:
+    # region Méthode: executer_toutes_les_actions_des_requins
+    def executer_toutes_les_actions_des_requins(
+        self, toutes_les_positions: list[tuple[int, int]], deja_agis: list
+    ) -> None:
         """Exécute toutes les actions des requins dans le monde.
         Chaque requin peut se reproduire, manger ou se déplacer, en fonction des possibilités offertes par les case voisines.
         Les requins agissent dans un ordre aléatoire pour simuler le comportement du monde.
@@ -194,10 +202,9 @@ class Monde:
         for position in toutes_les_positions:
             entite = self.grille.lire_case(position)
 
-            if any([entite is None,
-                    not isinstance(entite, Requin),
-                    position in deja_agis
-            ]):
+            if any(
+                [entite is None, not isinstance(entite, Requin), position in deja_agis]
+            ):
                 continue
 
             # Liste des positions des cases voisines
@@ -218,7 +225,7 @@ class Monde:
             if len(cases_vides) > 0:
                 # Un requin se reproduit en priorité
                 if entite._est_enceinte:
-                    bebe = entite.se_reproduire(cases_vides) 
+                    bebe = entite.se_reproduire(cases_vides)
                     # entite a changé de position
                     self.grille.placer_entite(position, bebe)
                     self.grille.placer_entite(entite.position, entite)
@@ -255,7 +262,10 @@ class Monde:
 
                 # Sinon il ne bouge pas (bloqué)
 
-    def executer_toutes_les_actions_des_poissons(self, toutes_les_positions:list[tuple[int,int]], deja_agis: list) -> None:
+    # region Méthode: executer_toutes_les_actions_des_poissons
+    def executer_toutes_les_actions_des_poissons(
+        self, toutes_les_positions: list[tuple[int, int]], deja_agis: list
+    ) -> None:
         """Exécute toutes les actions des poissons dans le monde.
         Chaque poisson peut se reproduire, manger ou se déplacer, en fonction des possibilités offertes par les case voisines.
         Les poissons agissent dans un ordre aléatoire pour simuler le comportement du monde.
@@ -268,14 +278,13 @@ class Monde:
         for position in toutes_les_positions:
             entite = self.grille.lire_case(position)
 
-            if any([entite is None,
-                    not isinstance(entite, Poisson),
-                    position in deja_agis
-                    ]):
+            if any(
+                [entite is None, not isinstance(entite, Poisson), position in deja_agis]
+            ):
                 continue
 
             # Liste des positions des cases voisines
-            #voisins = self.grille.cases_voisines(position)
+            # voisins = self.grille.cases_voisines(position)
 
             # Trouver les cases vides
             cases_vides = self.grille.cases_libres(position)
@@ -297,10 +306,9 @@ class Monde:
                     self.grille.placer_entite(entite.position, entite)
                     self.grille.placer_entite(position_avant, None)
                     deja_agis.append(entite.position)
-            
+
             # Sinon il ne bouge pas (bloqué)
-    
-        
+
     # region Méthode: afficher
     def afficher(self) -> None:
         """
@@ -318,45 +326,13 @@ class Monde:
             for x in range(self.colonnes):
                 entite = self.grille.lire_case((x, y))
                 if entite is None:
-                    # ligne += Emoji.replace(":water_wave:")  # case vide 🌊
-                    ligne += Emoji.replace(":blue_square:")  # case vide 🟦
-                    # ligne += Emoji.replace(":black_large_square:")  # case vide ⬛
-                    # ligne += Emoji.replace(":blue_circle:")  # case vide 🔵
-                    # ligne += Emoji.replace(":droplet:")  # case vide 💧
-                    # ligne += Emoji.replace(":large_blue_diamond:")  # case vide 🔷
-                    # ligne += Emoji.replace(":sweat_droplets:")  # case vide 💦
+                    ligne += symbole_case_vide()
                 elif isinstance(entite, Poisson):
-                    # ligne += Emoji.replace(":fish:") # poisson 🐟
-                    ligne += Emoji.replace(":tropical_fish:")  # poisson tropical 🐠
-                    # ligne += Emoji.replace(":blowfish:") # poisson ballon 🐡
+                    ligne += symbole_poisson()
                 elif isinstance(entite, Requin):
-                    ligne += Emoji.replace(":shark:")  # requin 🦈
+                    ligne += symbole_requin()
                 else:
-                    ligne += Emoji.replace(
-                        ":grey_question:"
-                    )  # point d'interrogation ❔
-                    # ligne += Emoji.replace(":white_question_mark:") #point d'interrogation ❔
-                    # ligne += Emoji.replace(":boat:")  # bateau ⛵
-                    # ligne += Emoji.replace(":speedboat:")  # bateau 🚤
-                    # ligne += Emoji.replace(":crab:")  # crabe 🦀
-                    # ligne += Emoji.replace(":diving_mask:")  # plongeur 🤿
-                    # ligne += Emoji.replace(":dolphin:")  # dauphin 🐬
-                    # ligne += Emoji.replace(":flipper:")  # dauphin 🐬
-                    # ligne += Emoji.replace(":ice:")  # iceberg 🧊
-                    # ligne += Emoji.replace(":lobster:")  # iceberg 🦞
-                    # ligne += Emoji.replace(":white_circle:")  # rocher ⚪
-                    # ligne += Emoji.replace(":whale:")  # baleine 🐳
-                    # ligne += Emoji.replace(":whale:")  # baleine 🐋
-                    # ligne += Emoji.replace(":turtle:")  # tortue 🐢
-                    # ligne += Emoji.replace(":surfer:")  # surfer 🏄
-                    # ligne += Emoji.replace(":shrimp:")  # crevette 🦐
-                    # ligne += Emoji.replace(":rowboat:")  # canoe 🚣
-                    # ligne += Emoji.replace(":octopus:")  # pieuvre 🐙
-                    # ligne += Emoji.replace(":microbe:")  # microbe 🦠
-                    # ligne += Emoji.replace(":mermaid:")  # sirène 🧜‍
-                    # ligne += Emoji.replace(":black_square_button:") # rocher 🔲
-                    # ligne += Emoji.replace(":white_large_square_button:") # rocher ⬜
-
+                    ligne += symbole_inconnu()
                 ligne_separateur += "--+"
                 ligne += "|"
 
@@ -373,8 +349,7 @@ class Monde:
 
         sleep(TEMPS_RAFRAICHISSEMENT)
 
-    # region REPR
-
+    # region Méthode __repr__
     def __repr__(self) -> str:
         """
         Affichage terminal
@@ -385,8 +360,6 @@ class Monde:
 
 
 # region TEST
-
-
 def test():
     # Création du monde et initialisation
     monde = Monde()
@@ -396,20 +369,8 @@ def test():
         nb_poissons=NOMBRE_INITIAUX_POISSON,
         nb_requins=NOMBRE_INITIAUX_REQUIN,
     )
-
     print(repr(monde))
 
-    # for _ in range(10):
-    #     # Rafraichir le terminal (cls pour windows et clear pour linux)
-    #     os.system("cls" if os.name == "nt" else "clear")
 
-    #     # Affichage de la grille (avec en-tete)
-    #     monde.afficher()
-    #     monde.executer_chronon()
-
-    #     # Attendre 2 sec
-    #     time.sleep(2)
-
-
-# if __name__ == "__main__":
-#    test()
+if __name__ == "__main__":
+    test()
