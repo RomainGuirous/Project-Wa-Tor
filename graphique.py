@@ -10,8 +10,7 @@ def bo_graphique(liste_abscisse, dico_entite):
 
 
     fig, ax = plt.subplots()
-    ax.stackplot(liste_abscisse, dico_entite.values(),
-                labels=dico_entite.keys(), alpha=0.8)
+    ax.stackplot(liste_abscisse, dico_entite.values())
     ax.legend(loc='upper left', reverse=True)
     ax.set_title('Population Wa-Tor')
     ax.set_xlabel('Chronons')
