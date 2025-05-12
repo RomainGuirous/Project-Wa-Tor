@@ -1,12 +1,14 @@
 from __future__ import annotations
-
+############################################################
+# Pour permettre de lancer les tests...
+#######################################
 import sys
 from pathlib import Path
-
 # Ajouter le répertoire parent au PYTHONPATH
 sys.path.append(str(Path(__file__).resolve().parent.parent))
-
-import random  # Pour utiliser le mélange aléatoire des positions
+############################################################
+from time import sleep
+import random
 from rich.emoji import Emoji
 from CLASSES.Grille import Grille
 from CLASSES.Poisson import Poisson
@@ -16,6 +18,7 @@ from parametres import (
     NOMBRE_COLONNE_GRILLE,
     NOMBRE_INITIAUX_POISSON,
     NOMBRE_INITIAUX_REQUIN,
+    TEMPS_RAFRAICHISSEMENT
 )
 
 random.seed()
@@ -23,7 +26,7 @@ random.seed()
 
 # Classe qui représente le monde Wa-Tor
 class Monde:
-    # region INIT/
+    # region Méthode:__init__
     def __init__(self) -> None:
         """
         Constructeur de la classe Monde.
@@ -34,11 +37,11 @@ class Monde:
         self.colonnes = NOMBRE_COLONNE_GRILLE
         self.lignes = NOMBRE_LIGNE_GRILLE
 
-    # region INITIALISER
+    # region Méthode:initialiser
     def initialiser(
         self,
-        classe_poisson: str = Poisson,
-        classe_requin: str = Requin,
+        classe_poisson: Poisson = Poisson,
+        classe_requin: Requin = Requin,
         nb_poissons: int = NOMBRE_INITIAUX_POISSON,
         nb_requins: int = NOMBRE_INITIAUX_REQUIN,
     ) -> None:
@@ -328,6 +331,9 @@ class Monde:
             print(ligne)
         else:
             print(ligne_separateur)
+
+        
+        sleep(TEMPS_RAFRAICHISSEMENT)
 
     # region REPR
 

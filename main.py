@@ -1,6 +1,5 @@
 from CLASSES.Monde import Monde
-from time import sleep
-from os import system, name as system_name
+from tools import rafraichir_terminal
 from parametres import CLEAR_TERMINAL, TEMPS_RAFRAICHISSEMENT, CHRONON_MAX
 
 
@@ -14,27 +13,25 @@ def main() -> None:
     Returns:
         None
     """
-    # Rafraichir le terminal (cls pour windows et clear pour linux)
-    system("cls" if system_name == "nt" else "clear")
+    rafraichir_terminal()
 
-    # Initialisation de Wa-Tor
+    # Initialisation du monde Wa-Tor
     monde_wa_tor = Monde()
     monde_wa_tor.initialiser()
     monde_wa_tor.afficher()
-    sleep(TEMPS_RAFRAICHISSEMENT)
 
     # Ecoulement du temps
     compteur = 0
     while True:
-        # Rafraichir le terminal (cls pour windows et clear pour linux)
         if CLEAR_TERMINAL:
-            system("cls" if system_name == "nt" else "clear")
+            rafraichir_terminal()
 
+        # Évolution du monde
         monde_wa_tor.executer_chronon()
         monde_wa_tor.afficher()
-        sleep(TEMPS_RAFRAICHISSEMENT)
 
         compteur += 1
+        # Fin de la simulation
         if compteur >= CHRONON_MAX:
             break
 
