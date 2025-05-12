@@ -20,6 +20,7 @@ from parametres import (
 
 random.seed()
 
+
 # Classe qui représente le monde Wa-Tor
 class Monde:
     # region INIT/
@@ -153,7 +154,11 @@ class Monde:
         for position in toutes_les_positions:
             entite = self.grille.lire_case(position)
 
-            if entite is None or not isinstance(entite, Requin) or position in deja_agis:
+            if (
+                entite is None
+                or not isinstance(entite, Requin)
+                or position in deja_agis
+            ):
                 continue
 
             # Liste des positions des cases voisines
@@ -220,35 +225,39 @@ class Monde:
             # random.shuffle(toutes_les_positions)
 
         for position in toutes_les_positions:
-                entite = self.grille.lire_case(position)
+            entite = self.grille.lire_case(position)
 
-                if entite is None or not isinstance(entite, Poisson)or position in deja_agis:
-                    continue
+            if (
+                entite is None
+                or not isinstance(entite, Poisson)
+                or position in deja_agis
+            ):
+                continue
 
-                # Liste des positions des cases voisines
-                voisins = self.grille.cases_voisines(position)
+            # Liste des positions des cases voisines
+            voisins = self.grille.cases_voisines(position)
 
-                # Trouver les cases vides
-                cases_vides = self.grille.cases_libres(position)
+            # Trouver les cases vides
+            cases_vides = self.grille.cases_libres(position)
 
-                # si au moins une case vide
-                # en priorité, poisson se reproduit, en second poisson se déplace
-                # sinon poisson ne bouge pas
-                if len(cases_vides) > 0:
-                    # Poisson se reproduit
-                    if entite._est_enceinte:
-                        bebe = entite.se_reproduire(cases_vides)
-                        self.grille.placer_entite(position, bebe)
-                        self.grille.placer_entite(entite.position, entite)
-                        deja_agis.append(entite.position)
+            # si au moins une case vide
+            # en priorité, poisson se reproduit, en second poisson se déplace
+            # sinon poisson ne bouge pas
+            if len(cases_vides) > 0:
+                # Poisson se reproduit
+                if entite._est_enceinte:
+                    bebe = entite.se_reproduire(cases_vides)
+                    self.grille.placer_entite(position, bebe)
+                    self.grille.placer_entite(entite.position, entite)
+                    deja_agis.append(entite.position)
 
-                    else:
-                        position_avant = entite.position
-                        entite.se_deplacer(cases_vides)  # change de position
-                        self.grille.placer_entite(entite.position, entite)
-                        self.grille.placer_entite(position, None)
-                        deja_agis.append(entite.position)   
-            
+                else:
+                    position_avant = entite.position
+                    entite.se_deplacer(cases_vides)  # change de position
+                    self.grille.placer_entite(entite.position, entite)
+                    self.grille.placer_entite(position, None)
+                    deja_agis.append(entite.position)
+
     # region AFFICHER
 
     def afficher(self) -> None:
@@ -358,5 +367,5 @@ def test():
     #     time.sleep(2)
 
 
-#if __name__ == "__main__":
+# if __name__ == "__main__":
 #    test()

@@ -32,7 +32,7 @@ def main() -> None:
 
         monde_wa_tor.executer_chronon()
         monde_wa_tor.afficher()
-        #sleep(2)
+        # sleep(2)
 
         compteur += 1
         if compteur >= 10:

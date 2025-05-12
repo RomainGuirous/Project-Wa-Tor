@@ -12,5 +12,5 @@ ENERGIE_MAX_REQUIN = 10
 GAIN_ENERGIE_EN_MANGEANT_POISSON = 3
 
 # paramètres de debuggage
-CLEAR_TERMINAL = True # True: ne voir que la dernière carte
-                      # False: conserver l'affichage de toutes les cartes
+CLEAR_TERMINAL = True  # True: ne voir que la dernière carte
+# False: conserver l'affichage de toutes les cartes
