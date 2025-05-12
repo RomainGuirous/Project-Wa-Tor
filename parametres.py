@@ -1,5 +1,4 @@
 # paramètres de la simulation
-
 NOMBRE_LIGNE_GRILLE = 10
 NOMBRE_COLONNE_GRILLE = 10
 NOMBRE_INITIAUX_POISSON = 20
@@ -10,3 +9,7 @@ TEMPS_GESTION_REQUIN = 5
 TEMPS_GESTION_POISSON = 3
 ENERGIE_INITIALE_REQUIN = 6
 GAIN_ENERGIE_EN_MANGEANT_POISSON = 3
+
+# paramètres de debuggage
+CLEAR_TERMINAL = True # True: ne voir que la dernière carte
+                      # False: conserver l'affichage de toutes les cartes

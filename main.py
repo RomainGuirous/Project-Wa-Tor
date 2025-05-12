@@ -1,6 +1,7 @@
 from CLASSES.Monde import Monde
 from time import sleep
 from os import system, name as system_name
+from parametres import CLEAR_TERMINAL
 
 
 def main() -> None:
@@ -20,12 +21,14 @@ def main() -> None:
     monde_wa_tor = Monde()
     monde_wa_tor.initialiser()
     monde_wa_tor.afficher()
+    sleep(2)
 
     # Ecoulement du temps
     compteur = 0
     while True:
         # Rafraichir le terminal (cls pour windows et clear pour linux)
-        system("cls" if system_name == "nt" else "clear")
+        if CLEAR_TERMINAL:
+            system("cls" if system_name == "nt" else "clear")
 
         monde_wa_tor.executer_chronon()
         monde_wa_tor.afficher()
