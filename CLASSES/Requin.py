@@ -1,4 +1,12 @@
 from __future__ import annotations
+############################################################
+# Pour permettre de lancer les tests...
+#######################################
+import sys
+from pathlib import Path
+# Ajouter le répertoire parent au PYTHONPATH
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+############################################################
 from CLASSES.EtreVivant import EtreVivant
 from CLASSES.Poisson import Poisson
 from parametres import (
@@ -87,30 +95,30 @@ class Requin(EtreVivant):
 # Test conserver temporairement
 def test():
     requin = Requin(position=(1, 1))
-    print(str(requin))
+    print(f"Requin:\n{str(requin)}")
 
     poisson = Poisson(position=(1, 0))
-    print(str(poisson))
-    requin.s_alimenter(poisson)
-    print(str(requin))
-    print(str(poisson))
+    print(f"Poisson:\n{str(poisson)}")
+    requin.s_alimenter(poisson.position)
+    print(f"Requin:\n{str(requin)}")
+    print(f"Poisson:\n{str(poisson)}")
 
     poisson = Poisson(position=(2, 0))
-    print(str(poisson))
-    requin.s_alimenter(poisson)
-    print(str(requin))
-    print(str(poisson))
+    print(f"Poisson:\n{str(poisson)}")
+    requin.s_alimenter(poisson.position)
+    print(f"Requin:\n{str(requin)}")
+    print(f"Poisson:\n{str(poisson)}")
 
     nouveau_requin = requin.se_reproduire()
-    print(str(requin))
-    print(str(nouveau_requin))
+    print(f"Requin:\n{str(requin)}")
+    print(f"Requin:\n{str(nouveau_requin)}")
 
     nouveau_requin.__energie = 0
     nouveau_requin.mourir()
-    print(str(nouveau_requin))
+    print(f"Requin:\n{str(nouveau_requin)}")
     requin._age = 100
     requin.mourir()
-    print(str(requin))
+    print(f"Requin:\n{str(requin)}")
 
     print(type(str(requin)))
 
