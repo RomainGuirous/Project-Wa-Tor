@@ -119,7 +119,7 @@ class Monde:
         """
         return [(x, y) for x in range(self.colonnes) for y in range(self.lignes)]
 
-    # region CHRONON
+    # region Méthode:executer_chronon
     def executer_chronon(self) -> None:
         """
         Exécute un chronon du monde Wa-Tor.
@@ -147,7 +147,7 @@ class Monde:
 
             # Nettoyage. Note:
             # cela empechera les requins de manger des poissons morts
-            # cela permettra aux autres entites de se déplacer sur les case occupés par les entités mortes
+            # cela permettra aux autres entites de se déplacer sur les case occupées par les entités mortes
             self.grille.nettoyer_case((x, y))
 
         self.executer_toutes_les_actions()
@@ -161,44 +161,49 @@ class Monde:
             # Nettoyage
             self.grille.nettoyer_case((x, y))
 
-    # region ACTIONS
-
-    # fonction executer toutes les actions
+    # region Méthode: executer_toutes_les_actions
     def executer_toutes_les_actions(self) -> None:
         """
         Exécute toutes les actions des entités dans le monde.
         Les requins agissent en premier, suivis des poissons.
-        Chaque entité peut se déplacer, se reproduire ou manger selon les règles du monde Wa-Tor.
-        Les entités agissent dans un ordre aléatoire pour simuler le comportement du monde.
-
+        
         Returns:
             None
         """
-        # Liste de toutes les positions de la grille
+        # Liste aléatoires de toutes les positions de la grille
         toutes_les_positions = self.toutes_les_positions()
-
-        # Mélange pour l’ordre aléatoire
         random.shuffle(toutes_les_positions)
 
         # liste des positions des entités qui ont déjà agi
         deja_agis = []
 
-        # region requin
-        # Étape 1 : les REQUINS agissent
+        # Execution des actions, une espèce après l'autre
+        self.executer_toutes_les_actions_des_requins(toutes_les_positions, deja_agis)
+        self.executer_toutes_les_actions_des_poissons(toutes_les_positions, deja_agis)
+
+    def executer_toutes_les_actions_des_requins(self, toutes_les_positions:list[tuple[int,int]], deja_agis: list) -> None:
+        """Exécute toutes les actions des requins dans le monde.
+        Chaque requin peut se reproduire, manger ou se déplacer, en fonction des possibilités offertes par les case voisines.
+        Les requins agissent dans un ordre aléatoire pour simuler le comportement du monde.
+
+        Args:
+            toutes_les_positions (list[tuple[int,int]]): Toutes les positions qui n'ont pas encore été inspectées pour action à ce chronon.
+            deja_agis (list): Liste des positions des entités qui ont déjà agis durant ce chronon.
+        """
+
         for position in toutes_les_positions:
             entite = self.grille.lire_case(position)
 
-            if (
-                entite is None
-                or not isinstance(entite, Requin)
-                or position in deja_agis
-            ):
+            if any([entite is None,
+                    not isinstance(entite, Requin),
+                    position in deja_agis
+            ]):
                 continue
 
             # Liste des positions des cases voisines
             voisins = self.grille.cases_voisines(position)
 
-            # Trouver les cases vides autour #Voir fonction déjà existante
+            # Trouver les cases vides autour
             cases_vides = self.grille.cases_libres(position)
 
             # Trouver les poissons autour
@@ -208,25 +213,18 @@ class Monde:
                 if self.grille.lire_case(voisin)
                 and isinstance(self.grille.lire_case(voisin), Poisson)
             ]
-            # region TERNAIRE
-            # cases_poissons = []
-            # for voisin in voisins:
-            #     voisin_entite = self.grille.lire_case(voisin)
-            #     if voisin_entite is not None and isinstance(voisin_entite, Poisson):
-            #         cases_poissons.append(voisin)
 
-            # Si au moins une case vide
+            # S'il y a au moins une case vide autour:
             if len(cases_vides) > 0:
-                # Requin se reproduit on place reproduction en priorité
+                # Un requin se reproduit en priorité
                 if entite._est_enceinte:
-                    bebe = entite.se_reproduire(
-                        cases_vides
-                    )  # entite change de position
+                    bebe = entite.se_reproduire(cases_vides) 
+                    # entite a changé de position
                     self.grille.placer_entite(position, bebe)
                     self.grille.placer_entite(entite.position, entite)
                     deja_agis.append(entite.position)
 
-                # Sinon, s’il peut manger un poisson
+                # Sinon, s’il peut manger un poisson, il le fait
                 elif len(cases_poissons) > 0:
                     cible = random.choice(cases_poissons)
                     position_avant = entite.position
@@ -235,7 +233,7 @@ class Monde:
                     self.grille.placer_entite(position_avant, None)
                     deja_agis.append(cible)
 
-                # Sinon, déplacement simple
+                # Sinon, il se déplace aléatoirement
                 else:
                     position_avant = entite.position
                     entite.se_deplacer(cases_vides)  # change de position
@@ -243,9 +241,10 @@ class Monde:
                     self.grille.placer_entite(position_avant, None)
                     deja_agis.append(entite.position)
 
-            # Si aucune case vide mais au moins un poisson: -> manger
-            # sinon ne bouge pas
+            # S'il n'y a aucune case vide autour...
             else:
+                # ...mais qu'il y a au moins un poisson:
+                # Un requin mange en priorité
                 if len(cases_poissons) > 0:
                     cible = random.choice(cases_poissons)
                     position_avant = entite.position
@@ -254,46 +253,55 @@ class Monde:
                     self.grille.placer_entite(position_avant, None)
                     deja_agis.append(cible)
 
-            # region poisson
-            # Étape 2 : les POISSONS agissent
-            # random.shuffle(toutes_les_positions)
+                # Sinon il ne bouge pas (bloqué)
+
+    def executer_toutes_les_actions_des_poissons(self, toutes_les_positions:list[tuple[int,int]], deja_agis: list) -> None:
+        """Exécute toutes les actions des poissons dans le monde.
+        Chaque poisson peut se reproduire, manger ou se déplacer, en fonction des possibilités offertes par les case voisines.
+        Les poissons agissent dans un ordre aléatoire pour simuler le comportement du monde.
+
+        Args:
+            toutes_les_positions (list[tuple[int,int]]): Toutes les positions qui n'ont pas encore été inspectées pour action à ce chronon.
+            deja_agis (list): Liste des positions des entités qui ont déjà agis durant ce chronon.
+        """
 
         for position in toutes_les_positions:
             entite = self.grille.lire_case(position)
 
-            if (
-                entite is None
-                or not isinstance(entite, Poisson)
-                or position in deja_agis
-            ):
+            if any([entite is None,
+                    not isinstance(entite, Poisson),
+                    position in deja_agis
+                    ]):
                 continue
 
             # Liste des positions des cases voisines
-            voisins = self.grille.cases_voisines(position)
+            #voisins = self.grille.cases_voisines(position)
 
             # Trouver les cases vides
             cases_vides = self.grille.cases_libres(position)
 
-            # si au moins une case vide
-            # en priorité, poisson se reproduit, en second poisson se déplace
-            # sinon poisson ne bouge pas
+            # S'il y a au moins une case vide autour:
             if len(cases_vides) > 0:
-                # Poisson se reproduit
+                # Un poisson se reproduit en priorité
                 if entite._est_enceinte:
                     bebe = entite.se_reproduire(cases_vides)
+                    # entite a changé de position
                     self.grille.placer_entite(position, bebe)
                     self.grille.placer_entite(entite.position, entite)
                     deja_agis.append(entite.position)
 
+                # Sinon, il se déplace aléatoirement
                 else:
                     position_avant = entite.position
                     entite.se_deplacer(cases_vides)  # change de position
                     self.grille.placer_entite(entite.position, entite)
-                    self.grille.placer_entite(position, None)
+                    self.grille.placer_entite(position_avant, None)
                     deja_agis.append(entite.position)
-
-    # region AFFICHER
-
+            
+            # Sinon il ne bouge pas (bloqué)
+    
+        
+    # region Méthode: afficher
     def afficher(self) -> None:
         """
         Affiche la grille du monde avec les entités présentes.
