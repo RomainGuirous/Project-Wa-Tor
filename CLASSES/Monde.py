@@ -73,19 +73,7 @@ class Monde:
 
         # Placement des espèces dans la grille
         self.placer_une_espece(classe_poisson, nb_poissons, toutes_les_positions)
-        # for _ in range(nb_poissons):
-        #     if not toutes_les_positions:
-        #         break
-        #     (x, y) = toutes_les_positions.pop()
-        #     poisson = classe_poisson((x, y))
-        #     self.grille.placer_entite((x, y), poisson)
         self.placer_une_espece(classe_requin, nb_requins, toutes_les_positions)
-        # for _ in range(nb_requins):
-        #     if not toutes_les_positions:
-        #         break
-        #     (x, y) = toutes_les_positions.pop()
-        #     requin = classe_requin((x, y))
-        #     self.grille.placer_entite((x, y), requin)
 
     # region Méthode:est_suffisamment_grand
     def est_suffisamment_grand(self, nb_entites: int) -> None:
@@ -107,6 +95,13 @@ class Monde:
         
     # region Méthode:placement_entites
     def placer_une_espece(self, classe_espece: Poisson | Requin, nb_entites: int, positions_possibles: list[tuple[int, int]]) -> None:
+        """Placer un nombre prédéfini d'entités dans la grille pour une certaine espèce.
+
+        Args:
+            classe_espece (Poisson | Requin): Espèce concernée
+            nb_entites (int): Nombre d'entités à placer
+            positions_possibles (list[tuple[int, int]]): Liste des positions encore disponibles dans la grille.
+        """
         for _ in range(nb_entites):
             if not positions_possibles:
                 break
@@ -114,8 +109,7 @@ class Monde:
             entite = classe_espece((x, y))
             self.grille.placer_entite((x, y), entite)
 
-    # region toute_positions
-
+    # region Méthode:toute_positions
     def toutes_les_positions(self) -> list[tuple[int, int]]:
         """
         Renvoie une liste de toutes les positions de la grille.
