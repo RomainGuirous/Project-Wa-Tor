@@ -44,9 +44,9 @@ class Grille:
         Returns:
             any: Valeur de la case à la position donnée.
         """
-        x = position_tuple[0] % self.lignes
-        y = position_tuple[1] % self.colonnes
-        return self.grille[x][y]
+        x = position_tuple[0] % self.colonnes
+        y = position_tuple[1] % self.lignes
+        return self.grille[y][x]
 
     def nettoyer_case(self, position_tuple: tuple[int, int]) -> None:
         """
@@ -75,9 +75,9 @@ class Grille:
         Returns:
             None
         """
-        x = position_tuple[0] % self.lignes
-        y = position_tuple[1] % self.colonnes
-        self.grille[x][y] = entite
+        x = position_tuple[0] % self.colonnes
+        y = position_tuple[1] % self.lignes
+        self.grille[y][x] = entite
 
     def cases_voisines(self, position_tuple: tuple[int, int]) -> list[tuple[int, int]]:
         """

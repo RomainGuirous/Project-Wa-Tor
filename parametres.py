@@ -1,4 +1,6 @@
 # paramètres de la simulation
+# ---------------------------
+CHRONON_MAX = 10
 NOMBRE_LIGNE_GRILLE = 10
 NOMBRE_COLONNE_GRILLE = 10
 NOMBRE_INITIAUX_POISSON = 1
@@ -11,6 +13,12 @@ ENERGIE_INITIALE_REQUIN = 6
 ENERGIE_MAX_REQUIN = 10
 GAIN_ENERGIE_EN_MANGEANT_POISSON = 3
 
-# paramètres de debuggage
-CLEAR_TERMINAL = True  # True: ne voir que la dernière carte
+# paramètres d'affichage
+# ----------------------
+# Affichage dynamique ?
+# True: ne voir que la dernière carte
 # False: conserver l'affichage de toutes les cartes
+CLEAR_TERMINAL = True
+
+# Temps de rafraichissement du terminal en secondes
+TEMPS_RAFRAICHISSEMENT = 0.5

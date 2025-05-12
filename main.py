@@ -1,7 +1,7 @@
 from CLASSES.Monde import Monde
 from time import sleep
 from os import system, name as system_name
-from parametres import CLEAR_TERMINAL
+from parametres import CLEAR_TERMINAL, TEMPS_RAFRAICHISSEMENT, CHRONON_MAX
 
 
 def main() -> None:
@@ -21,7 +21,7 @@ def main() -> None:
     monde_wa_tor = Monde()
     monde_wa_tor.initialiser()
     monde_wa_tor.afficher()
-    sleep(2)
+    sleep(TEMPS_RAFRAICHISSEMENT)
 
     # Ecoulement du temps
     compteur = 0
@@ -32,10 +32,10 @@ def main() -> None:
 
         monde_wa_tor.executer_chronon()
         monde_wa_tor.afficher()
-        # sleep(2)
+        sleep(TEMPS_RAFRAICHISSEMENT)
 
         compteur += 1
-        if compteur >= 10:
+        if compteur >= CHRONON_MAX:
             break
 
 
