@@ -25,11 +25,11 @@ def main() -> None:
     compteur = 0
     while True:
         # Rafraichir le terminal (cls pour windows et clear pour linux)
-        system("cls" if system_name == "nt" else "clear")
+        #system("cls" if system_name == "nt" else "clear")
 
         monde_wa_tor.executer_chronon()
         monde_wa_tor.afficher()
-        sleep(2)
+        #sleep(2)
 
         compteur += 1
         if compteur >= 10:

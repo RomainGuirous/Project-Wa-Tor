@@ -1,4 +1,11 @@
 from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+# Ajouter le répertoire parent au PYTHONPATH
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
 import random  # Pour utiliser le mélange aléatoire des positions
 from rich.emoji import Emoji
 from CLASSES.Grille import Grille
@@ -13,10 +20,9 @@ from parametres import (
 
 random.seed()
 
-
 # Classe qui représente le monde Wa-Tor
 class Monde:
-    # region INIT
+    # region INIT/
     def __init__(self) -> None:
         """
         Constructeur de la classe Monde.
@@ -147,11 +153,7 @@ class Monde:
         for position in toutes_les_positions:
             entite = self.grille.lire_case(position)
 
-            if entite is None:
-                continue
-            if not isinstance(entite, Requin):
-                continue
-            if position in deja_agis:
+            if entite is None or not isinstance(entite, Requin) or position in deja_agis:
                 continue
 
             # Liste des positions des cases voisines
@@ -217,14 +219,10 @@ class Monde:
             # Étape 2 : les POISSONS agissent
             # random.shuffle(toutes_les_positions)
 
-            for position in toutes_les_positions:
+        for position in toutes_les_positions:
                 entite = self.grille.lire_case(position)
 
-                if entite is None:
-                    continue
-                if not isinstance(entite, Poisson):
-                    continue
-                if position in deja_agis:
+                if entite is None or not isinstance(entite, Poisson)or position in deja_agis:
                     continue
 
                 # Liste des positions des cases voisines
@@ -249,8 +247,8 @@ class Monde:
                         entite.se_deplacer(cases_vides)  # change de position
                         self.grille.placer_entite(entite.position, entite)
                         self.grille.placer_entite(position, None)
-                        deja_agis.append(entite.position)
-
+                        deja_agis.append(entite.position)   
+            
     # region AFFICHER
 
     def afficher(self) -> None:
