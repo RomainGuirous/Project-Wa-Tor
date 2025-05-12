@@ -1,9 +1,11 @@
 from __future__ import annotations
+
 ############################################################
 # Pour permettre de lancer les tests...
 #######################################
 import sys
 from pathlib import Path
+
 # Ajouter le répertoire parent au PYTHONPATH
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 ############################################################
@@ -18,7 +20,7 @@ from parametres import (
     NOMBRE_COLONNE_GRILLE,
     NOMBRE_INITIAUX_POISSON,
     NOMBRE_INITIAUX_REQUIN,
-    TEMPS_RAFRAICHISSEMENT
+    TEMPS_RAFRAICHISSEMENT,
 )
 
 random.seed()
@@ -58,24 +60,59 @@ class Monde:
         Returns:
             None
         """
-        toutes_les_positions = [
-            (x, y) for x in range(self.colonnes) for y in range(self.lignes)
-        ]
+        # Vérification des paramètres d'entrée
+        if (nb_poissons < 0):
+            raise ValueError("Le nombre de poissons initial doit être positif.")
+        if (nb_requins < 0):
+            raise ValueError("Le nombre de requins initial doit être positif.")
+        self.est_suffisamment_grand(nb_poissons+nb_requins)
+
+        # Liste aléatoires de toutes les positions de la grille
+        toutes_les_positions = self.toutes_les_positions()
         random.shuffle(toutes_les_positions)
 
-        for _ in range(nb_poissons):
-            if not toutes_les_positions:
-                break
-            (x, y) = toutes_les_positions.pop()
-            poisson = classe_poisson((x, y))
-            self.grille.placer_entite((x, y), poisson)
+        # Placement des espèces dans la grille
+        self.placer_une_espece(classe_poisson, nb_poissons, toutes_les_positions)
+        # for _ in range(nb_poissons):
+        #     if not toutes_les_positions:
+        #         break
+        #     (x, y) = toutes_les_positions.pop()
+        #     poisson = classe_poisson((x, y))
+        #     self.grille.placer_entite((x, y), poisson)
+        self.placer_une_espece(classe_requin, nb_requins, toutes_les_positions)
+        # for _ in range(nb_requins):
+        #     if not toutes_les_positions:
+        #         break
+        #     (x, y) = toutes_les_positions.pop()
+        #     requin = classe_requin((x, y))
+        #     self.grille.placer_entite((x, y), requin)
 
-        for _ in range(nb_requins):
-            if not toutes_les_positions:
+    # region Méthode:est_suffisamment_grand
+    def est_suffisamment_grand(self, nb_entites: int) -> None:
+        """Vérifie si la taille de la grille est suffisament grand par
+        rapport au nombre de poissons et nombres de requins demandés
+        initialement.
+
+        Args:
+            nb_entites (int): Nombre d'entités.
+
+        Raises:
+            ValueError: Si le nombre d'entités est plus grand que le nombre de case,
+            lève l'erreur.
+        """
+        if self.lignes * self.colonnes < nb_entites:
+            raise ValueError(
+                f"Le nombre initial de poissons et de requins ({nb_entites}) est trop grand pour la taille de grille\nTaille de la grille: {self.lignes}X{self.colonnes}"
+            )
+        
+    # region Méthode:placement_entites
+    def placer_une_espece(self, classe_espece: Poisson | Requin, nb_entites: int, positions_possibles: list[tuple[int, int]]) -> None:
+        for _ in range(nb_entites):
+            if not positions_possibles:
                 break
-            (x, y) = toutes_les_positions.pop()
-            requin = classe_requin((x, y))
-            self.grille.placer_entite((x, y), requin)
+            (x, y) = positions_possibles.pop()
+            entite = classe_espece((x, y))
+            self.grille.placer_entite((x, y), entite)
 
     # region toute_positions
 
@@ -332,7 +369,6 @@ class Monde:
         else:
             print(ligne_separateur)
 
-        
         sleep(TEMPS_RAFRAICHISSEMENT)
 
     # region REPR
