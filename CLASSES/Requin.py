@@ -22,6 +22,7 @@ from parametres import (
     TEMPS_GESTION_REQUIN,
     LIMITE_AGE_REQUIN,
     PERTE_ENERGIE_EN_COMBATTANT,
+    AGE_ADULTE_REQUIN
 )
 
 
@@ -111,6 +112,9 @@ class Requin(EtreVivant):
         super().vieillir(temps_reproduction)
         # Perte d'énergie
         self.perte_d_energie()
+        # Passage à l'age adulte
+        if self.age >= AGE_ADULTE_REQUIN:
+            self._est_bebe = False
 
     def mourir(self, age_max: int = LIMITE_AGE_REQUIN) -> None:
         """
@@ -135,7 +139,7 @@ class Requin(EtreVivant):
         Returns:
             str: affichage
         """
-        return super(Requin, self).__str__() + f"energie={self.__energie}\n"
+        return super(Requin, self).__str__() + f"est_bebe={self._est_bebe}\n" + f"energie={self.__energie}\n"
 
 
 # Test conserver temporairement
@@ -159,6 +163,10 @@ def test():
     print(f"Requin:\n{str(requin)}")
     print(f"Requin:\n{str(nouveau_requin)}")
 
+    while (requin.est_bebe):
+        requin.vieillir()
+        print(f"Requin:\n{str(requin)}")    
+
     nouveau_requin.__energie = 0
     nouveau_requin.mourir()
     print(f"Requin:\n{str(nouveau_requin)}")
@@ -175,6 +183,8 @@ def test():
     requin1.combattre(requin2)
     print(f"Requin1:\n{str(requin1)}")
     print(f"Requin2:\n{str(requin2)}")
+
+
 
 if __name__ == "__main__":
     test()
