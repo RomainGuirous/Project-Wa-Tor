@@ -93,9 +93,20 @@ class Requin(EtreVivant):
         # Si le requin a dépassé l'âge maximum, il meurt
         super().mourir(age_max)
 
+    # pour s'assurer que proie_position fait référence à l'objet, et ne soit pas une valeur fixe
     def initialiser_traque(self, proie: Requin | Poisson):
-        
+        self.proie_position = list[proie.position]
             
+    def traque(self):
+        if self.position_proie:
+            if self.position_proie[0][0] < self.position[0]:
+                self.position = (self.position[0] -1, self.position[1])
+            elif self.position_proie[0][0] > self.position[0]:
+                self.position = (self.position[0] + 1, self.position[1])
+            elif self.position_proie[0][1] < self.position[1]:
+                self.position = (self.position[0], self.position[1] -1)
+            elif self.position_proie[0][1] > self.position[1]:
+                self.position = (self.position[0], self.position[1] +1)
 
     def __str__(self) -> str:
         """Représentation humainement lisible
