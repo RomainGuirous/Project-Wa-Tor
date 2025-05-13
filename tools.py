@@ -1,5 +1,6 @@
 from os import system, name as system_name
 
+
 def rafraichir_terminal() -> None:
     """Rafraichir le terminal"""
     # commande 'cls' sous windows

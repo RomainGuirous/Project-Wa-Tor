@@ -133,13 +133,15 @@ class EtreVivant:
         Returns:
             str: affichage
         """
-        return f"est_vivant={self._est_vivant}\n" + \
-               f"age={self.age}\n" + \
-               f"position={self.position}\n" + \
-               f"temps gestion={self._temps_gestion}\n" + \
-               f"est_enceinte={self._est_enceinte}\n"
-    
+        return (
+            f"est_vivant={self._est_vivant}\n"
+            + f"age={self.age}\n"
+            + f"position={self.position}\n"
+            + f"temps gestion={self._temps_gestion}\n"
+            + f"est_enceinte={self._est_enceinte}\n"
+        )
+
+
 if __name__ == "__main__":
     # Code à exécuter uniquement si ce fichier est lancé directement
     print("Ce fichier est conçu pour être importé, pas exécuté directement.")
-

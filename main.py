@@ -2,7 +2,13 @@ from CLASSES.Monde import Monde
 from CLASSES.Poisson import Poisson
 from CLASSES.Requin import Requin
 from graphique import graphique_populations
-from parametres import CLEAR_TERMINAL, INTERVALLE_AFFICHAGE, CHRONON_MAX, NOMBRE_INITIAUX_POISSON, NOMBRE_INITIAUX_REQUIN
+from parametres import (
+    CLEAR_TERMINAL,
+    INTERVALLE_AFFICHAGE,
+    CHRONON_MAX,
+    NOMBRE_INITIAUX_POISSON,
+    NOMBRE_INITIAUX_REQUIN,
+)
 from tools import rafraichir_terminal
 
 
@@ -29,7 +35,9 @@ def main() -> None:
     nbr_cases = monde_wa_tor.colonnes * monde_wa_tor.lignes
     liste_nombre_poissons = [NOMBRE_INITIAUX_POISSON]
     liste_nombre_requins = [NOMBRE_INITIAUX_REQUIN]
-    liste_nombre_cases_vides = [nbr_cases - NOMBRE_INITIAUX_POISSON - NOMBRE_INITIAUX_REQUIN]
+    liste_nombre_cases_vides = [
+        nbr_cases - NOMBRE_INITIAUX_POISSON - NOMBRE_INITIAUX_REQUIN
+    ]
     liste_chronons = [0]
     while True:
         if CLEAR_TERMINAL:
@@ -44,17 +52,20 @@ def main() -> None:
 
             liste_chronons.append(monde_wa_tor.chronon)
 
-            nbr_poisson = monde_wa_tor.grille.nombre_entite(Poisson)
+            nbr_poisson = monde_wa_tor.grille.nombre_espece(Poisson)
             liste_nombre_poissons.append(nbr_poisson)
 
-            nbr_requin = monde_wa_tor.grille.nombre_entite(Requin)
+            nbr_requin = monde_wa_tor.grille.nombre_espece(Requin)
             liste_nombre_requins.append(nbr_requin)
 
             nbr_cases_vides = nbr_cases - nbr_poisson - nbr_requin
             liste_nombre_cases_vides.append(nbr_cases_vides)
 
-            dict_entite = {'poisson': liste_nombre_poissons, 'requin': liste_nombre_requins, 'cases vides': liste_nombre_cases_vides}
-        
+            dict_entite = {
+                "poisson": liste_nombre_poissons,
+                "requin": liste_nombre_requins,
+                "cases vides": liste_nombre_cases_vides,
+            }
 
         # Fin de la simulation
         compteur += 1

@@ -8,7 +8,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 ############################################################
 from parametres import NOMBRE_LIGNE_GRILLE, NOMBRE_COLONNE_GRILLE
-from typing import Type #cela correspond à un type classe
+from typing import Type  # cela correspond à un type classe
 
 
 class Grille:
@@ -124,15 +124,14 @@ class Grille:
             if self.lire_case(case) == None:
                 liste_cases_libres.append(case)
         return liste_cases_libres
-    
-    def nombre_entite(self, entite: Type) -> int:
-        nbr_entite = 0
+
+    def nombre_espece(self, espece: Type) -> int:
+        nbr_espece = 0
         for x in range(self.colonnes):
             for y in range(self.lignes):
-                if  isinstance(self.lire_case((x,y)), entite):
-                    nbr_entite += 1
-        return nbr_entite
-
+                if isinstance(self.lire_case((x, y)), espece):
+                    nbr_espece += 1
+        return nbr_espece
 
 
 # region TEST

@@ -1,17 +1,17 @@
 # paramètres de la simulation
 # ---------------------------
 
-#grille
+# grille
 CHRONON_MAX = 400
 NOMBRE_LIGNE_GRILLE = 15
 NOMBRE_COLONNE_GRILLE = 10
 
-#poisson
+# poisson
 NOMBRE_INITIAUX_POISSON = 130
 LIMITE_AGE_POISSON = 10
 TEMPS_GESTION_POISSON = 2
 
-#requin
+# requin
 NOMBRE_INITIAUX_REQUIN = 10
 LIMITE_AGE_REQUIN = 11
 TEMPS_GESTION_REQUIN = 5
