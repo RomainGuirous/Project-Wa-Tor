@@ -49,13 +49,23 @@ class EtreVivant:
     def age(self) -> int:
         """
         Renvoie l'âge de l'entité.
-        L'âge est un entier représentant le nombre d'années depuis la naissance de l'entité.
+        L'âge est un entier représentant le nombre de chronons depuis la naissance de l'entité.
         """
         return self._age
 
     @property
     def est_vivant(self) -> bool:
+        """
+        Renvoie un booléen indiquant si l'entité est vivante.
+        """
         return self._est_vivant
+
+    @property
+    def est_enceinte(self) -> bool:
+        """
+        Renvoie un booléen indiquant si l'entité est enceinte.
+        """
+        return self._est_enceinte
 
     def se_reproduire(
         self, liste_deplacements_disponibles: list[tuple[int, int]] = []
