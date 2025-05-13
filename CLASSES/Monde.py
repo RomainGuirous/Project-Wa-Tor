@@ -310,12 +310,13 @@ class Monde:
             # Sinon il ne bouge pas (bloqué)
 
     # region Méthode: afficher
-    def afficher(self) -> None:
+    def afficher(self, param_sleep: bool = True) -> None:
         """
         Affiche la grille du monde avec les entités présentes.
         Chaque case est représentée par un emoji correspondant à l'entité présente.
         Les cases vides sont représentées par un emoji d'eau.
         Les poissons et requins sont représentés par leurs emojis respectifs.
+        Si param_sleep est True, la fonction attend un certain temps avant de rafraîchir l'affichage.
 
         Returns:
             None: Affiche la grille dans le terminal.
@@ -341,13 +342,16 @@ class Monde:
                 print("| WA-TOR WORLD |")
                 print("+--------------+\n")
                 print(f"Chronon: {self.chronon}\n")
+                print(f" Nombre poisson: {self.grille.nombre_espece(Poisson)}")
+                print(f" Nombre requin: {self.grille.nombre_espece(Requin)}")
 
             print(ligne_separateur)
             print(ligne)
         else:
             print(ligne_separateur)
 
-        sleep(TEMPS_RAFRAICHISSEMENT)
+        if param_sleep:
+            sleep(TEMPS_RAFRAICHISSEMENT)
 
     # region Méthode __repr__
     def __repr__(self) -> str:
