@@ -217,59 +217,45 @@ class Monde:
                 # S'il y a au moins une case vide autour:
                 if len(positions_voisines_vides) > 0:
                     # Un requin se reproduit en priorité
-                    # if gestionnaire.execute_se_reproduire_requin(entite, position, positions_voisines_vides, self.grille, deja_agis):
-                    #     continue
-                    if entite._est_enceinte:
-                        bebe = entite.se_reproduire(positions_voisines_vides)
-                        # entite a changé de position
-                        self.grille.placer_entite(position, bebe)
-                        self.grille.placer_entite(entite.position, entite)
-                        deja_agis.append(entite.position)
-
-                    # Sinon, s’il peut manger un poisson et s'il a faim, il le fait, il le fait
-                    # elif gestionnaire.execute_s_alimenter_requin(entite, position, cases_poissons, self.grille, deja_agis):
-                    #     continue
-                    elif (
-                        len(positions_voisines_poissons) > 0
-                        and entite.energie <= ENERGIE_FAIM_REQUIN
+                    if gestionnaire.execute_se_reproduire_entite(
+                        entite,
+                        position,
+                        positions_voisines_vides,
+                        self.grille,
+                        deja_agis,
                     ):
-                        cible = random.choice(positions_voisines_poissons)
-                        position_avant = entite.position
-                        entite.s_alimenter(cible)  # change de position
-                        self.grille.placer_entite(entite.position, entite)
-                        self.grille.placer_entite(position_avant, None)
-                        deja_agis.append(cible)
-
+                        continue
+                    # Sinon, s’il peut manger un poisson et s'il a faim, il le fait
+                    elif gestionnaire.execute_s_alimenter_requin(
+                        entite,
+                        position,
+                        positions_voisines_poissons,
+                        self.grille,
+                        deja_agis,
+                    ):
+                        continue
                     # Sinon, il se déplace aléatoirement
-                    # elif gestionnaire.execute_se_deplacer_entite(entite, position, cases_vides, self.grille, deja_agis):
-                    #     continue
-                    else:
-                        position_avant = entite.position
-                        entite.se_deplacer(
-                            positions_voisines_vides
-                        )  # change de position
-                        self.grille.placer_entite(entite.position, entite)
-                        self.grille.placer_entite(position_avant, None)
-                        deja_agis.append(entite.position)
-
-                # S'il n'y a aucune case vide autour...
-                # if gestionnaire.execute_s_alimenter_requin(entite, position, cases_poissons, self.grille, deja_agis):
-                #     continue
-                else:
-                    # ...mais qu'il y a au moins un poisson:
-                    # Un requin mange en priorité
-                    if (
-                        len(positions_voisines_poissons) > 0
-                        and entite.energie <= ENERGIE_FAIM_REQUIN
+                    elif gestionnaire.execute_se_deplacer_entite(
+                        entite,
+                        position,
+                        positions_voisines_vides,
+                        self.grille,
+                        deja_agis,
                     ):
-                        cible = random.choice(positions_voisines_poissons)
-                        position_avant = entite.position
-                        entite.s_alimenter(cible)  # change de position
-                        self.grille.placer_entite(entite.position, entite)
-                        self.grille.placer_entite(position_avant, None)
-                        deja_agis.append(cible)
+                        continue
 
-                        # Sinon il ne bouge pas (bloqué)
+                # S'il n'y a aucune case vide autour:
+                else:
+                    # Si un requin peut manger un poisson et s'il a faim, il le fait
+                    if gestionnaire.execute_s_alimenter_requin(
+                        entite,
+                        position,
+                        positions_voisines_poissons,
+                        self.grille,
+                        deja_agis,
+                    ):
+                        continue
+                    # Sinon il ne bouge pas (bloqué)
 
     # region Méthode: executer_toutes_les_actions_des_poissons
     def executer_toutes_les_actions_des_poissons(
@@ -287,40 +273,31 @@ class Monde:
         for position in toutes_les_positions:
             entite = self.grille.lire_case(position)
 
-            if any(
-                [entite is None, not isinstance(entite, Poisson), position in deja_agis]
-            ):
-                continue
+            if all([isinstance(entite, Poisson), not position in deja_agis]):
+                # Liste des positions des cases voisines (selon type)
+                positions_voisines_vides = self.grille.cases_voisines_libres(position)
 
-            # Liste des positions des cases voisines
-            # voisins = self.grille.cases_voisines(position)
-
-            # Trouver les cases vides
-            cases_vides = self.grille.cases_voisines_libres(position)
-
-            # S'il y a au moins une case vide autour:
-            if len(cases_vides) > 0:
-                # Un poisson se reproduit en priorité
-                # if gestionnaire.execute_se_reproduire_entite(entite, position, cases_vides, self.grille, deja_agis):
-                #     continue
-                if entite._est_enceinte:
-                    bebe = entite.se_reproduire(cases_vides)
-                    # entite a changé de position
-                    self.grille.placer_entite(position, bebe)
-                    self.grille.placer_entite(entite.position, entite)
-                    deja_agis.append(entite.position)
-
-                # Sinon, il se déplace aléatoirement
-                # elif gestionnaire.execute_se_deplacer_entite(entite, position, cases_vides, self.grille, deja_agis):
-                #     continue
-                else:
-                    position_avant = entite.position
-                    entite.se_deplacer(cases_vides)  # change de position
-                    self.grille.placer_entite(entite.position, entite)
-                    self.grille.placer_entite(position_avant, None)
-                    deja_agis.append(entite.position)
-
-            # Sinon il ne bouge pas (bloqué)
+                # S'il y a au moins une case vide autour:
+                if len(positions_voisines_vides) > 0:
+                    # Un poisson se reproduit en priorité
+                    if gestionnaire.execute_se_reproduire_entite(
+                        entite,
+                        position,
+                        positions_voisines_vides,
+                        self.grille,
+                        deja_agis,
+                    ):
+                        continue
+                    # Sinon, il se déplace aléatoirement
+                    elif gestionnaire.execute_se_deplacer_entite(
+                        entite,
+                        position,
+                        positions_voisines_vides,
+                        self.grille,
+                        deja_agis,
+                    ):
+                        continue
+                # Sinon il ne bouge pas (bloqué)
 
     # region Méthode: afficher
     def afficher(self, param_sleep: bool = True) -> None:
