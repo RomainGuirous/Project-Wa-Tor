@@ -45,7 +45,7 @@ def main() -> None:
 
         # Évolution du monde
         monde_wa_tor.executer_chronon()
-        monde_wa_tor.afficher(False)
+        monde_wa_tor.afficher()
 
         # partie graphique
         if monde_wa_tor.chronon % INTERVALLE_AFFICHAGE == 0:

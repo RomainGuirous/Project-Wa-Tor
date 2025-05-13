@@ -108,7 +108,11 @@ class Grille:
                 liste_voisins.update([(x, y)])
         return list(liste_voisins)
 
-    def cases_libres(self, position_tuple: tuple[int, int]):
+    def cases_voisines_libres(
+        self,
+        position_tuple: tuple[int, int],
+        positions_voisines: list[tuple[int, int]] = [],
+    ):
         """
         Renvoie la liste des cases libres autour d'une case donnée.
 
@@ -118,12 +122,40 @@ class Grille:
         Returns:
             list[tuple[int, int]]: Liste des positions des cases libres.
         """
-        liste_cases_libres = []
-        liste_cases_voisines = self.cases_voisines(position_tuple)
-        for case in liste_cases_voisines:
-            if self.lire_case(case) == None:
-                liste_cases_libres.append(case)
+        if not positions_voisines:
+            positions_voisines = self.cases_voisines(position_tuple)
+
+        liste_cases_libres = [
+            position_voisine
+            for position_voisine in positions_voisines
+            if self.lire_case(position_voisine) == None
+        ]
         return liste_cases_libres
+
+    def cases_voisines_entites(
+        self,
+        classe_entite,
+        position_tuple: tuple[int, int],
+        positions_voisines: list[tuple[int, int]] = [],
+    ):
+        """
+        Renvoie la liste des cases libres autour d'une case donnée.
+
+        Args:
+            position_tuple (tuple[int, int]): Position de la case dont on veut les cases libres.
+
+        Returns:
+            list[tuple[int, int]]: Liste des positions des cases libres.
+        """
+        if not positions_voisines:
+            positions_voisines = self.cases_voisines(position_tuple)
+
+        liste_cases_poissons = [
+            position_voisine
+            for position_voisine in positions_voisines
+            if isinstance(self.lire_case(position_voisine), classe_entite)
+        ]
+        return liste_cases_poissons
 
     def nombre_espece(self, espece: Type) -> int:
         nbr_espece = 0
@@ -137,15 +169,18 @@ class Grille:
 # region TEST
 def test():
     grille_demo = Grille(5, 1)
+    print("Cases voisines (monde 1D)")
     print(grille_demo.cases_voisines((2, 0)))
 
     grille_demo = Grille(5, 3)
+    print("Cases voisines (monde 2D)")
     print(grille_demo.cases_voisines((2, 0)))
 
     grille_demo = Grille(5, 5)
     grille_demo.placer_entite((2, 3), "P")
     grille_demo.placer_entite((4, 3), "P")
-    print(grille_demo.cases_libres((3, 3)))
+    print("Cases voisines vides (monde 2D)")
+    print(grille_demo.cases_voisines_libres((3, 3)))
 
 
 if __name__ == "__main__":
