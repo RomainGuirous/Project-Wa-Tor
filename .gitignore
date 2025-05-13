@@ -175,3 +175,6 @@ cython_debug/
 
 # config VS Code
 .vscode
+
+# parametres
+parametres.py

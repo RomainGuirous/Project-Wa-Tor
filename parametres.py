@@ -1,3 +1,5 @@
+# /!\ RAJOUTER NOUVEAUX PARAMETRES DANS LE FICHIER parametres.py.exemple /!\
+
 # paramètres de la simulation
 # ---------------------------
 
