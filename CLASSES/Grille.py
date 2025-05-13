@@ -108,7 +108,11 @@ class Grille:
                 liste_voisins.update([(x, y)])
         return list(liste_voisins)
 
-    def cases_voisines_libres(self, position_tuple: tuple[int, int], positions_voisines: list[tuple[int, int]] = []):
+    def cases_voisines_libres(
+        self,
+        position_tuple: tuple[int, int],
+        positions_voisines: list[tuple[int, int]] = [],
+    ):
         """
         Renvoie la liste des cases libres autour d'une case donnée.
 
@@ -128,7 +132,12 @@ class Grille:
         ]
         return liste_cases_libres
 
-    def cases_voisines_entites(self, classe_entite, position_tuple: tuple[int, int], positions_voisines: list[tuple[int, int]] = []):
+    def cases_voisines_entites(
+        self,
+        classe_entite,
+        position_tuple: tuple[int, int],
+        positions_voisines: list[tuple[int, int]] = [],
+    ):
         """
         Renvoie la liste des cases libres autour d'une case donnée.
 
@@ -172,6 +181,7 @@ def test():
     grille_demo.placer_entite((4, 3), "P")
     print("Cases voisines vides (monde 2D)")
     print(grille_demo.cases_voisines_libres((3, 3)))
+
 
 if __name__ == "__main__":
     test()

@@ -20,7 +20,7 @@ from parametres import (
     NOMBRE_INITIAUX_POISSON,
     NOMBRE_INITIAUX_REQUIN,
     TEMPS_RAFRAICHISSEMENT,
-    ENERGIE_FAIM_REQUIN
+    ENERGIE_FAIM_REQUIN,
 )
 from emojis import symbole_case_vide, symbole_poisson, symbole_requin, symbole_inconnu
 
@@ -206,8 +206,12 @@ class Monde:
             if all([isinstance(entite, Requin) and not position in deja_agis]):
                 # Liste des positions des cases voisines (total et selon type)
                 positions_voisines = self.grille.cases_voisines(position)
-                positions_voisines_vides = self.grille.cases_voisines_libres(position, positions_voisines)
-                positions_voisines_poissons = self.grille.cases_voisines_entites(Poisson, position, positions_voisines)
+                positions_voisines_vides = self.grille.cases_voisines_libres(
+                    position, positions_voisines
+                )
+                positions_voisines_poissons = self.grille.cases_voisines_entites(
+                    Poisson, position, positions_voisines
+                )
 
                 # S'il y a au moins une case vide autour:
                 if len(positions_voisines_vides) > 0:
@@ -220,7 +224,10 @@ class Monde:
                         deja_agis.append(entite.position)
 
                     # Sinon, s’il peut manger un poisson et s'il a faim, il le fait
-                    elif len(positions_voisines_poissons) > 0 and entite.energie <= ENERGIE_FAIM_REQUIN:
+                    elif (
+                        len(positions_voisines_poissons) > 0
+                        and entite.energie <= ENERGIE_FAIM_REQUIN
+                    ):
                         cible = random.choice(positions_voisines_poissons)
                         position_avant = entite.position
                         entite.s_alimenter(cible)  # change de position
@@ -231,7 +238,9 @@ class Monde:
                     # Sinon, il se déplace aléatoirement
                     else:
                         position_avant = entite.position
-                        entite.se_deplacer(positions_voisines_vides)  # change de position
+                        entite.se_deplacer(
+                            positions_voisines_vides
+                        )  # change de position
                         self.grille.placer_entite(entite.position, entite)
                         self.grille.placer_entite(position_avant, None)
                         deja_agis.append(entite.position)
@@ -240,7 +249,10 @@ class Monde:
                 else:
                     # ...mais qu'il y a au moins un poisson:
                     # Un requin mange en priorité
-                    if len(positions_voisines_poissons) > 0 and entite.energie <= ENERGIE_FAIM_REQUIN:
+                    if (
+                        len(positions_voisines_poissons) > 0
+                        and entite.energie <= ENERGIE_FAIM_REQUIN
+                    ):
                         cible = random.choice(positions_voisines_poissons)
                         position_avant = entite.position
                         entite.s_alimenter(cible)  # change de position
@@ -363,8 +375,8 @@ def test():
     print(grille_demo.cases_voisines((2, 0)))
 
     grille_demo = Grille(5, 5)
-    grille_demo.placer_entite((2, 3), Poisson((2,3)))
-    grille_demo.placer_entite((4, 3), Poisson((4,3)))
+    grille_demo.placer_entite((2, 3), Poisson((2, 3)))
+    grille_demo.placer_entite((4, 3), Poisson((4, 3)))
     print("Cases voisines vides (monde 2D)")
     print(grille_demo.cases_voisines_libres((3, 3)))
     print("Cases voisines poissons (monde 2D)")
