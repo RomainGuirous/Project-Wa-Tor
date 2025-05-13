@@ -14,6 +14,7 @@ import random
 from CLASSES.Grille import Grille
 from CLASSES.Poisson import Poisson
 from CLASSES.Requin import Requin
+import gestionnaire
 from parametres import (
     NOMBRE_LIGNE_GRILLE,
     NOMBRE_COLONNE_GRILLE,
@@ -224,6 +225,8 @@ class Monde:
             # S'il y a au moins une case vide autour:
             if len(cases_vides) > 0:
                 # Un requin se reproduit en priorité
+                # if gestionnaire.execute_se_reproduire_requin(entite, position, cases_vides, self.grille, deja_agis):
+                #     continue
                 if entite._est_enceinte:
                     bebe = entite.se_reproduire(cases_vides)
                     # entite a changé de position
@@ -232,6 +235,8 @@ class Monde:
                     deja_agis.append(entite.position)
 
                 # Sinon, s’il peut manger un poisson, il le fait
+                # elif gestionnaire.execute_s_alimenter_requin(entite, position, cases_poissons, self.grille, deja_agis):
+                #     continue
                 elif len(cases_poissons) > 0:
                     cible = random.choice(cases_poissons)
                     position_avant = entite.position
@@ -241,6 +246,8 @@ class Monde:
                     deja_agis.append(cible)
 
                 # Sinon, il se déplace aléatoirement
+                # elif gestionnaire.execute_se_deplacer_entite(entite, position, cases_vides, self.grille, deja_agis):
+                #     continue
                 else:
                     position_avant = entite.position
                     entite.se_deplacer(cases_vides)  # change de position
@@ -252,6 +259,8 @@ class Monde:
             else:
                 # ...mais qu'il y a au moins un poisson:
                 # Un requin mange en priorité
+                # if gestionnaire.execute_s_alimenter_requin(entite, position, cases_poissons, self.grille, deja_agis):
+                #     continue
                 if len(cases_poissons) > 0:
                     cible = random.choice(cases_poissons)
                     position_avant = entite.position
@@ -292,6 +301,8 @@ class Monde:
             # S'il y a au moins une case vide autour:
             if len(cases_vides) > 0:
                 # Un poisson se reproduit en priorité
+                # if gestionnaire.execute_se_reproduire_entite(entite, position, cases_vides, self.grille, deja_agis):
+                #     continue
                 if entite._est_enceinte:
                     bebe = entite.se_reproduire(cases_vides)
                     # entite a changé de position
@@ -300,6 +311,8 @@ class Monde:
                     deja_agis.append(entite.position)
 
                 # Sinon, il se déplace aléatoirement
+                # elif gestionnaire.execute_se_deplacer_entite(entite, position, cases_vides, self.grille, deja_agis):
+                #     continue
                 else:
                     position_avant = entite.position
                     entite.se_deplacer(cases_vides)  # change de position
