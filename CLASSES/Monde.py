@@ -203,7 +203,7 @@ class Monde:
         for position in toutes_les_positions:
             entite = self.grille.lire_case(position)
 
-            if all([isinstance(entite, Requin) and not position in deja_agis]):
+            if all([isinstance(entite, Requin), not position in deja_agis]):
                 # Liste des positions des cases voisines (total et selon type)
                 positions_voisines = self.grille.cases_voisines(position)
                 positions_voisines_vides = self.grille.cases_voisines_libres(
