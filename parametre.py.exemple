@@ -1,0 +1,38 @@
+# paramètres de la simulation
+# ---------------------------
+
+# grille
+CHRONON_MAX =
+NOMBRE_LIGNE_GRILLE =
+NOMBRE_COLONNE_GRILLE =
+
+# poisson
+NOMBRE_INITIAUX_POISSON =
+LIMITE_AGE_POISSON =
+TEMPS_GESTION_POISSON =
+
+# requin
+NOMBRE_INITIAUX_REQUIN =
+LIMITE_AGE_REQUIN =
+TEMPS_GESTION_REQUIN =
+ENERGIE_INITIALE_REQUIN =
+ENERGIE_MAX_REQUIN =
+ENERGIE_FAIM_REQUIN =
+GAIN_ENERGIE_EN_MANGEANT_POISSON =
+
+# paramètres d'affichage
+# ----------------------
+# Affichage dynamique ?
+# True: ne voir que la dernière carte
+# False: conserver l'affichage de toutes les cartes
+CLEAR_TERMINAL = True
+
+# Intervalle d'affichage
+INTERVALLE_AFFICHAGE =
+
+# Temps de rafraichissement du terminal en secondes
+TEMPS_RAFRAICHISSEMENT =
+
+if __name__ == "__main__":
+    # Code à exécuter uniquement si ce fichier est lancé directement
+    print("Ce fichier est conçu pour être importé, pas exécuté directement.")
