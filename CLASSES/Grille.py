@@ -9,6 +9,9 @@ sys.path.append(str(Path(__file__).resolve().parent.parent))
 ############################################################
 from parametres import NOMBRE_LIGNE_GRILLE, NOMBRE_COLONNE_GRILLE
 from typing import Type  # cela correspond à un type classe
+from Poisson import Poisson
+from Requin import Requin
+import random
 
 
 class Grille:
@@ -164,23 +167,69 @@ class Grille:
                 if isinstance(self.lire_case((x, y)), espece):
                     nbr_espece += 1
         return nbr_espece
+    
+    def scanner(self, position_tuple: tuple[int, int], distance_scan: int) -> dict[int, list[int, int]]:
+        """
+        Renvoie un dictionnaire contenant les cases à une distance donnée d'une case.
+        La clé du dictionnaire est la distance, et la valeur est une liste de tuples représentant les positions des cases.
+
+        Args:
+            position_tuple (tuple[int, int]): Position de la case à partir de laquelle scanner.
+            distance_scan (int): Distance maximale à scanner.
+
+        Returns:
+            dict[int, list[int, int]]: Dictionnaire contenant les cases à une distance donnée.
+        """
+        if distance_scan < 1:
+            raise("La distance de scan doit être minimum de 1.")
+        else:
+            dict_cases = {}
+            for distance in range(1,distance_scan +1):
+                liste_cases_distance = []
+                for x in range(-distance, distance + 1):
+                    for y in range(-distance, distance + 1):
+                        if abs(x) + abs(y) == distance:
+                            liste_cases_distance.append((position_tuple[0] + x, position_tuple[1] + y))
+                dict_cases[distance] = liste_cases_distance
+            return dict_cases
+    
+    def proie(self, position_tuple: tuple[int, int], distance_scan: int) -> Poisson | Requin:
+        """
+        Renvoie la première proie rencontrée dans le scan à une distance donnée.
+        La proie peut être un poisson ou un requin.
+
+        Args:
+            position_tuple (tuple[int, int]): Position de la case à partir de laquelle scanner.
+            distance_scan (int): Distance maximale à scanner.
+
+        Returns:
+            Poisson | Requin: La première proie rencontrée dans le scan.
+        """
+        dico_traque = self.scanner(position_tuple, distance_scan)
+        for distance in range(1, distance_scan + 1):
+            for position_entite in random.shuffle(dico_traque[distance]):
+                if self.lire_case(position_entite) != None:
+                    return self.lire_case(position_entite)     
+        
 
 
 # region TEST
 def test():
     grille_demo = Grille(5, 1)
-    print("Cases voisines (monde 1D)")
-    print(grille_demo.cases_voisines((2, 0)))
+    # print("Cases voisines (monde 1D)")
+    # print(grille_demo.cases_voisines((2, 0)))
 
-    grille_demo = Grille(5, 3)
-    print("Cases voisines (monde 2D)")
-    print(grille_demo.cases_voisines((2, 0)))
+    # grille_demo = Grille(5, 3)
+    # print("Cases voisines (monde 2D)")
+    # print(grille_demo.cases_voisines((2, 0)))
 
-    grille_demo = Grille(5, 5)
-    grille_demo.placer_entite((2, 3), "P")
-    grille_demo.placer_entite((4, 3), "P")
-    print("Cases voisines vides (monde 2D)")
-    print(grille_demo.cases_voisines_libres((3, 3)))
+    # grille_demo = Grille(5, 5)
+    # grille_demo.placer_entite((2, 3), "P")
+    # grille_demo.placer_entite((4, 3), "P")
+    # print("Cases voisines vides (monde 2D)")
+    # print(grille_demo.cases_voisines_libres((3, 3)))
+
+    print(grille_demo.scanner((3, 3),2))
 
 
 if __name__ == "__main__":

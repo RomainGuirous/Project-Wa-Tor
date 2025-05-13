@@ -11,6 +11,7 @@ sys.path.append(str(Path(__file__).resolve().parent.parent))
 ############################################################
 from CLASSES.EtreVivant import EtreVivant
 from CLASSES.Poisson import Poisson
+from CLASSES.Grille import Grille
 from parametres import (
     ENERGIE_INITIALE_REQUIN,
     ENERGIE_MAX_REQUIN,
@@ -22,6 +23,10 @@ from parametres import (
 
 class Requin(EtreVivant):
     __energie = ENERGIE_INITIALE_REQUIN
+    
+    def __init__(self, position, __position_proie = None):
+        super().__init__(position)
+        self.__position_proie = __position_proie
 
     @property
     def energie(self) -> int:
@@ -30,6 +35,10 @@ class Requin(EtreVivant):
     def perte_d_energie(self):
         """Perd 1 en energie."""
         self.__energie -= 1
+
+    @property
+    def position_proie(self) -> list[tuple[int, int]]:
+        return self.__position_proie
 
     def s_alimenter(self, position_proie: tuple[int, int]) -> bool:
         """
@@ -83,6 +92,10 @@ class Requin(EtreVivant):
             return
         # Si le requin a dépassé l'âge maximum, il meurt
         super().mourir(age_max)
+
+    def initialiser_traque(self, proie: Requin | Poisson):
+        
+            
 
     def __str__(self) -> str:
         """Représentation humainement lisible
