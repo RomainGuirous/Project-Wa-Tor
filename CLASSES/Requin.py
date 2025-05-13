@@ -9,6 +9,10 @@ from pathlib import Path
 # Ajouter le répertoire parent au PYTHONPATH
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 ############################################################
+import random
+
+random.seed()
+
 from CLASSES.EtreVivant import EtreVivant
 from CLASSES.Poisson import Poisson
 from parametres import (
@@ -17,6 +21,7 @@ from parametres import (
     GAIN_ENERGIE_EN_MANGEANT_POISSON,
     TEMPS_GESTION_REQUIN,
     LIMITE_AGE_REQUIN,
+    PERTE_ENERGIE_EN_COMBATTANT,
 )
 
 
@@ -51,6 +56,38 @@ class Requin(EtreVivant):
         )
         # proie._est_vivant = False
         return True
+
+    def combattre(self, adversaire: Requin) -> bool:
+        """
+        combat avec un autre requin. Le résultat du combat est aléatoire. 
+        L'un des deux requins meurent, l'autre prend sa position et perd
+        de l'énergie.
+
+        Args:
+            adversaire (Requin): l'autre requin
+
+        Returns:
+            bool: True si self a gagné, False si adversaire a gagné
+        """
+        # Victoire de self ?
+        est_victorieux = random.choice([True, False])
+
+        if est_victorieux:
+            # Déplacement vers l'adversaire éliminé
+            self._position = adversaire._position
+            adversaire._est_vivant = False
+
+            # Perte d'énergie en raison des blessures
+            self.__energie -= PERTE_ENERGIE_EN_COMBATTANT
+        else:
+            # Déplacement de l'adversaire vers le requin éliminé
+            adversaire._position = self._position
+            self._est_vivant = False
+
+            # Perte d'énergie en raison des blessures
+            adversaire.__energie -= PERTE_ENERGIE_EN_COMBATTANT
+
+        return False
 
     def vieillir(self, temps_reproduction: int = TEMPS_GESTION_REQUIN) -> None:
         """
@@ -123,6 +160,13 @@ def test():
 
     print(type(str(requin)))
 
+    requin1 = Requin(position=(1, 1))
+    print(f"Requin1:\n{str(requin1)}")
+    requin2 = Requin(position=(2, 1))
+    print(f"Requin2:\n{str(requin2)}")
+    requin1.combattre(requin2)
+    print(f"Requin1:\n{str(requin1)}")
+    print(f"Requin2:\n{str(requin2)}")
 
 if __name__ == "__main__":
     test()
