@@ -27,10 +27,18 @@ from parametres import (
 
 class Requin(EtreVivant):
     __energie = ENERGIE_INITIALE_REQUIN
+    _est_bebe = True
 
     @property
     def energie(self) -> int:
         return self.__energie
+    
+    @property
+    def est_bebe(self) -> bool:
+        """
+        Renvoie un booléen indiquant si l'entité est un bebe.
+        """
+        return self._est_bebe
 
     def perte_d_energie(self):
         """Perd 1 en energie."""
