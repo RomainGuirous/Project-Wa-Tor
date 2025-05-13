@@ -213,6 +213,9 @@ class Monde:
                 positions_voisines_poissons = self.grille.cases_voisines_entites(
                     Poisson, position, positions_voisines
                 )
+                positions_voisines_requins_adultes = self.grille.cases_voisines_entites(
+                    Requin, position, positions_voisines, filtre_adulte=True
+                )
 
                 # S'il y a au moins une case vide autour:
                 if len(positions_voisines_vides) > 0:
@@ -223,6 +226,15 @@ class Monde:
                         positions_voisines_vides,
                         self.grille,
                         deja_agis,
+                    ):
+                        continue
+                    # Sinon, s’il a faim mais pas trop et qu'un autre requin est proche, il defend son territoire
+                    elif gestionnaire.execute_combattre_requin(
+                        entite,
+                        position,
+                        positions_voisines_requins_adultes,
+                        self.grille,
+                        deja_agis
                     ):
                         continue
                     # Sinon, s’il peut manger un poisson et s'il a faim, il le fait
@@ -246,8 +258,17 @@ class Monde:
 
                 # S'il n'y a aucune case vide autour:
                 else:
-                    # Si un requin peut manger un poisson et s'il a faim, il le fait
-                    if gestionnaire.execute_s_alimenter_requin(
+                    # Si un requin a faim mais pas trop et qu'un autre requin est proche, il defend son territoire
+                    if gestionnaire.execute_combattre_requin(
+                        entite,
+                        position,
+                        positions_voisines_requins_adultes,
+                        self.grille,
+                        deja_agis
+                    ):
+                        continue
+                    # Sinon, s'il peut manger un poisson et s'il a faim, il le fait
+                    elif gestionnaire.execute_s_alimenter_requin(
                         entite,
                         position,
                         positions_voisines_poissons,
@@ -369,8 +390,17 @@ def test():
     grille_demo.placer_entite((4, 3), Poisson((4, 3)))
     print("Cases voisines vides (monde 2D)")
     print(grille_demo.cases_voisines_libres((3, 3)))
+
+    grille_demo.placer_entite((3, 2), Requin((3, 2)))
+    requin = Requin((3, 4))
+    requin._est_bebe = False
+    grille_demo.placer_entite((3, 4), requin)
     print("Cases voisines poissons (monde 2D)")
     print(grille_demo.cases_voisines_entites(Poisson, (3, 3)))
+    print("Cases voisines requins (monde 2D)")
+    print(grille_demo.cases_voisines_entites(Requin, (3, 3)))
+    print("Cases voisines requins (monde 2D)")
+    print(grille_demo.cases_voisines_entites(Requin, (3, 3), filtre_adulte=True))
 
     # Création du monde et initialisation
     monde = Monde()

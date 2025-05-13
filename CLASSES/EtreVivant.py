@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Self  # Pour le type hinting de la méthode se_reproduire
 from random import randint
 from CLASSES.Grille import Grille
@@ -97,6 +98,9 @@ class EtreVivant:
         return nouveau_vivant
 
     def s_alimenter():
+        pass
+
+    def combattre():
         pass
 
     def vieillir(self, temps_reproduction: int) -> None:
