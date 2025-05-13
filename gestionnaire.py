@@ -81,19 +81,20 @@ def execute_se_deplacer_entite(
 def execute_combattre_requin(
     requin: Requin,
     position: tuple[int, int],
-    cases_voisines_requins: list[tuple[int, int]],
+    cases_voisines_requins_adultes: list[tuple[int, int]],
     grille: Grille,
     deja_agis: list[tuple[int, int]],
 ) -> bool:
 
     if all(
         [
-            len(cases_voisines_requins) > 0,
+            not requin.est_bebe,
+            len(cases_voisines_requins_adultes) > 0,
             ENERGIE_FAIM_CRITIQUE_REQUIN < requin.energie <= ENERGIE_FAIM_REQUIN,
         ]
     ):
         # Execution action
-        position_adversaire = random.choice(cases_voisines_requins)
+        position_adversaire = random.choice(cases_voisines_requins_adultes)
         adversaire = grille.lire_case(position_adversaire)
         est_victorieux = requin.combattre(
             adversaire
