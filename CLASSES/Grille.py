@@ -137,6 +137,7 @@ class Grille:
         classe_entite,
         position_tuple: tuple[int, int],
         positions_voisines: list[tuple[int, int]] = [],
+        filtre_adulte: bool = False
     ):
         """
         Renvoie la liste des cases libres autour d'une case donnée.
@@ -150,12 +151,20 @@ class Grille:
         if not positions_voisines:
             positions_voisines = self.cases_voisines(position_tuple)
 
-        liste_cases_poissons = [
-            position_voisine
-            for position_voisine in positions_voisines
-            if isinstance(self.lire_case(position_voisine), classe_entite)
-        ]
-        return liste_cases_poissons
+        if not filtre_adulte:
+            liste_cases_entites = [
+                position_voisine
+                for position_voisine in positions_voisines
+                if isinstance(self.lire_case(position_voisine), classe_entite)
+            ]
+        else:
+            liste_cases_entites = []
+            for position_voisine in positions_voisines:
+                entite = self.lire_case(position_voisine)
+                if isinstance(entite, classe_entite) and not entite.est_bebe:
+                    liste_cases_entites.append(position_voisine)
+        
+        return liste_cases_entites
 
     def nombre_espece(self, espece: Type) -> int:
         nbr_espece = 0
