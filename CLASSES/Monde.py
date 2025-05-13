@@ -320,7 +320,6 @@ class Monde:
                     ligne += symbole_poisson()
                 elif isinstance(entite, Requin):
                     ligne += symbole_requin()
-                    debug = str(entite)
                 else:
                     ligne += symbole_inconnu()
                 ligne_separateur += "--+"
@@ -339,7 +338,6 @@ class Monde:
         else:
             print(ligne_separateur)
 
-        print(debug)
         if param_sleep:
             sleep(TEMPS_RAFRAICHISSEMENT)
 
