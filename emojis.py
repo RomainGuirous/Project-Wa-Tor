@@ -1,5 +1,6 @@
 from rich.emoji import Emoji
 
+
 def symbole_case_vide() -> str:
     """Symbole pour les cases vides.
 
@@ -15,6 +16,7 @@ def symbole_case_vide() -> str:
     # symbole = Emoji.replace(":sweat_droplets:")  # case vide 💦
     return symbole
 
+
 def symbole_poisson() -> str:
     """Symbole pour les poissons.
 
@@ -22,18 +24,20 @@ def symbole_poisson() -> str:
         str: Emoji sélectionné
     """
     # symbole = Emoji.replace(":fish:") # poisson 🐟
-    symbole = Emoji.replace(":tropical_fish:") # poisson tropical 🐠
+    symbole = Emoji.replace(":tropical_fish:")  # poisson tropical 🐠
     # symbole = Emoji.replace(":blowfish:") # poisson ballon 🐡
     return symbole
+
 
 def symbole_requin() -> str:
     """Symbole pour les requins.
 
     Returns:
-        str: Emoji sélectionné    
+        str: Emoji sélectionné
     """
-    symbole = Emoji.replace(":shark:") # requin 🦈
+    symbole = Emoji.replace(":shark:")  # requin 🦈
     return symbole
+
 
 def symbole_inconnu() -> str:
     """Symbole pour les entités inconnues
@@ -41,7 +45,7 @@ def symbole_inconnu() -> str:
     Returns:
         str: Emoji sélectionné
     """
-    symbole = Emoji.replace(":grey_question:") # point d'interrogation ❔
+    symbole = Emoji.replace(":grey_question:")  # point d'interrogation ❔
     # symbole = Emoji.replace(":white_question_mark:") #point d'interrogation ❔
     return symbole
 
@@ -67,3 +71,7 @@ def symbole_inconnu() -> str:
 # Emoji.replace(":mermaid:")  # sirène 🧜‍
 # Emoji.replace(":black_square_button:") # rocher 🔲
 # Emoji.replace(":white_large_square_button:") # rocher ⬜
+
+if __name__ == "__main__":
+    # Code à exécuter uniquement si ce fichier est lancé directement
+    print("Ce fichier est conçu pour être importé, pas exécuté directement.")

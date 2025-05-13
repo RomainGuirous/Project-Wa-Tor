@@ -40,7 +40,7 @@ class EtreVivant:
         """
         if not liste_deplacements_disponibles:
             grille = Grille()
-            liste_deplacements_disponibles = grille.cases_libres(self.position)
+            liste_deplacements_disponibles = grille.cases_voisines_libres(self.position)
 
         hasard = randint(0, len(liste_deplacements_disponibles) - 1)
         self._position = liste_deplacements_disponibles[hasard]
@@ -83,7 +83,7 @@ class EtreVivant:
         # Si aucune position n'est fournie, utilise la grille pour trouver les positions libres
         if not liste_deplacements_disponibles:
             grille = Grille()
-            liste_deplacements_disponibles = grille.cases_libres(self.position)
+            liste_deplacements_disponibles = grille.cases_voisines_libres(self.position)
 
         # Creation d'un nouveau être vivant à la même position (les classes filles créront leur propre instance)
         nouveau_vivant = self.__class__(self.position)
@@ -143,9 +143,15 @@ class EtreVivant:
         Returns:
             str: affichage
         """
-        return f"est_vivant={self._est_vivant}\n" + \
-               f"age={self.age}\n" + \
-               f"position={self.position}\n" + \
-               f"temps gestion={self._temps_gestion}\n" + \
-               f"est_enceinte={self._est_enceinte}\n"
+        return (
+            f"est_vivant={self._est_vivant}\n"
+            + f"age={self.age}\n"
+            + f"position={self.position}\n"
+            + f"temps gestion={self._temps_gestion}\n"
+            + f"est_enceinte={self._est_enceinte}\n"
+        )
 
+
+if __name__ == "__main__":
+    # Code à exécuter uniquement si ce fichier est lancé directement
+    print("Ce fichier est conçu pour être importé, pas exécuté directement.")

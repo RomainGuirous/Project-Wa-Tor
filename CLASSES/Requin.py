@@ -1,9 +1,11 @@
 from __future__ import annotations
+
 ############################################################
 # Pour permettre de lancer les tests...
 #######################################
 import sys
 from pathlib import Path
+
 # Ajouter le répertoire parent au PYTHONPATH
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 ############################################################
@@ -89,7 +91,6 @@ class Requin(EtreVivant):
             str: affichage
         """
         return super(Requin, self).__str__() + f"energie={self.__energie}\n"
-
 
 
 # Test conserver temporairement
