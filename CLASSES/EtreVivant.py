@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Self  # Pour le type hinting de la méthode se_reproduire
 from random import randint
 from CLASSES.Grille import Grille
@@ -9,6 +10,7 @@ class EtreVivant:
     _age = 0
     _temps_gestion = 0
     _est_enceinte = False
+    _est_bebe = True
 
     def __init__(self, position: tuple[int, int]) -> None:
         """
@@ -59,6 +61,13 @@ class EtreVivant:
         Renvoie un booléen indiquant si l'entité est vivante.
         """
         return self._est_vivant
+    
+    @property
+    def est_bebe(self) -> bool:
+        """
+        Renvoie un booléen indiquant si l'entité est un bebe.
+        """
+        return self._est_bebe
 
     @property
     def est_enceinte(self) -> bool:
