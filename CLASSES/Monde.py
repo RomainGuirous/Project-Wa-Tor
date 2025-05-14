@@ -14,6 +14,7 @@ import random
 from CLASSES.Grille import Grille
 from CLASSES.Poisson import Poisson
 from CLASSES.Requin import Requin
+from CLASSES.Rocher import Rocher
 import gestionnaire
 from parametres import (
     NOMBRE_LIGNE_GRILLE,
@@ -23,7 +24,13 @@ from parametres import (
     TEMPS_RAFRAICHISSEMENT,
     ENERGIE_FAIM_REQUIN,
 )
-from emojis import symbole_case_vide, symbole_poisson, symbole_requin, symbole_inconnu
+from emojis import (
+    symbole_case_vide,
+    symbole_poisson,
+    symbole_requin,
+    symbole_inconnu,
+    symbole_rocher,
+)
 
 random.seed()
 
@@ -234,7 +241,7 @@ class Monde:
                         position,
                         positions_voisines_requins_adultes,
                         self.grille,
-                        deja_agis
+                        deja_agis,
                     ):
                         continue
                     # Sinon, s’il peut manger un poisson et s'il a faim, il le fait
@@ -264,7 +271,7 @@ class Monde:
                         position,
                         positions_voisines_requins_adultes,
                         self.grille,
-                        deja_agis
+                        deja_agis,
                     ):
                         continue
                     # Sinon, s'il peut manger un poisson et s'il a faim, il le fait
@@ -343,6 +350,8 @@ class Monde:
                     ligne += symbole_poisson()
                 elif isinstance(entite, Requin):
                     ligne += symbole_requin()
+                elif isinstance(entite, Rocher):
+                    ligne += symbole_rocher()
                 else:
                     ligne += symbole_inconnu()
                 ligne_separateur += "--+"
