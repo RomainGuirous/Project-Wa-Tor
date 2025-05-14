@@ -57,16 +57,16 @@ def main() -> None:
 
             liste_chronons.append(monde_wa_tor.chronon)
 
-            nbr_poisson = monde_wa_tor.grille.nombre_espece(Poisson)
-            liste_nombre_poissons.append(nbr_poisson)
-
             nbr_super_poisson = monde_wa_tor.grille.nombre_espece(SuperPoisson)
             liste_nombre_super_poissons.append(nbr_super_poisson)
+
+            nbr_poisson = monde_wa_tor.grille.nombre_espece(Poisson) - nbr_super_poisson
+            liste_nombre_poissons.append(nbr_poisson)
 
             nbr_requin = monde_wa_tor.grille.nombre_espece(Requin)
             liste_nombre_requins.append(nbr_requin)
 
-            nbr_cases_vides = nbr_cases - nbr_poisson - nbr_requin
+            nbr_cases_vides = nbr_cases - nbr_poisson - nbr_requin - nbr_super_poisson
             liste_nombre_cases_vides.append(nbr_cases_vides)
 
             dict_entite = {
