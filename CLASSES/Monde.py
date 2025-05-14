@@ -14,7 +14,7 @@ import random
 from CLASSES.Grille import Grille
 from CLASSES.Poisson import Poisson
 from CLASSES.Requin import Requin
-from CLASSES.Rocher import Rocher
+from CLASSES.Rocher import Rocher, positions_de_la_cavite
 import gestionnaire
 from parametres import (
     NOMBRE_LIGNE_GRILLE,
@@ -22,7 +22,6 @@ from parametres import (
     NOMBRE_INITIAUX_POISSON,
     NOMBRE_INITIAUX_REQUIN,
     TEMPS_RAFRAICHISSEMENT,
-    ENERGIE_FAIM_REQUIN,
 )
 from emojis import (
     symbole_case_vide,
@@ -436,7 +435,7 @@ def test():
     # Test placer_des_rochers
     monde = Monde()
     toutes_les_positions = monde.toutes_les_positions()
-    monde.placer_les_rochers([(0,0)], toutes_les_positions)
+    monde.placer_les_rochers(positions_de_la_cavite((0,0)), toutes_les_positions)
     monde.afficher()
     print(toutes_les_positions)
 

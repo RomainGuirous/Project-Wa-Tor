@@ -23,6 +23,10 @@ ENERGIE_FAIM_CRITIQUE_REQUIN =
 GAIN_ENERGIE_EN_MANGEANT_POISSON =
 PERTE_ENERGIE_EN_COMBATTANT =
 
+# rocher
+TAILLE_REFUGE =
+TAILLE_ENTREE_REFUGE =
+
 # paramètres d'affichage
 # ----------------------
 # Affichage dynamique ?
