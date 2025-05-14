@@ -22,6 +22,7 @@ from parametres import (
     NOMBRE_INITIAUX_POISSON,
     NOMBRE_INITIAUX_REQUIN,
     TEMPS_RAFRAICHISSEMENT,
+    INCLURE_REFUGE,
 )
 from emojis import (
     symbole_case_vide,
@@ -75,8 +76,16 @@ class Monde:
             raise ValueError("Le nombre de requins initial doit être positif.")
         self.est_suffisamment_grand(nb_poissons + nb_requins)
 
-        # Liste aléatoires de toutes les positions de la grille
+        # Liste de toutes les positions de la grille
         toutes_les_positions = self.toutes_les_positions()
+
+        # Placement du refuge
+        if INCLURE_REFUGE:
+            self.placer_les_rochers(
+                positions_de_la_cavite((0, 0)), toutes_les_positions
+            )
+
+        # Liste aléatoire de toutes les positions restantes
         random.shuffle(toutes_les_positions)
 
         # Placement des espèces dans la grille
@@ -121,7 +130,7 @@ class Monde:
             (x, y) = positions_possibles.pop()
             entite = classe_espece((x, y))
             self.grille.placer_entite((x, y), entite)
-    
+
     # region Méthode:placement_rochers
     def placer_les_rochers(
         self,
@@ -435,7 +444,7 @@ def test():
     # Test placer_des_rochers
     monde = Monde()
     toutes_les_positions = monde.toutes_les_positions()
-    monde.placer_les_rochers(positions_de_la_cavite((0,0)), toutes_les_positions)
+    monde.placer_les_rochers(positions_de_la_cavite((0, 0)), toutes_les_positions)
     monde.afficher()
     print(toutes_les_positions)
 
