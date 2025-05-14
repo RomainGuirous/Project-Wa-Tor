@@ -29,6 +29,9 @@ class Poisson(EtreVivant):
         """
         super().mourir(age_max)
 
+class SuperPoisson(Poisson):
+    pass
+
 
 def test():
     poisson = Poisson(position=(1, 1))

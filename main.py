@@ -1,5 +1,5 @@
 from CLASSES.Monde import Monde
-from CLASSES.Poisson import Poisson
+from CLASSES.Poisson import Poisson, SuperPoisson
 from CLASSES.Requin import Requin
 from graphique import graphique_populations
 from parametres import (
@@ -7,6 +7,7 @@ from parametres import (
     INTERVALLE_AFFICHAGE,
     CHRONON_MAX,
     NOMBRE_INITIAUX_POISSON,
+    NOMBRE_INITIAUX_SUPER_POISSON,
     NOMBRE_INITIAUX_REQUIN,
 )
 from tools import rafraichir_terminal
@@ -35,6 +36,8 @@ def main() -> None:
     nbr_cases = monde_wa_tor.colonnes * monde_wa_tor.lignes
     nbr_poisson = NOMBRE_INITIAUX_POISSON
     liste_nombre_poissons = [NOMBRE_INITIAUX_POISSON]
+    nbr_super_poisson = NOMBRE_INITIAUX_SUPER_POISSON
+    liste_nombre_super_poissons = [NOMBRE_INITIAUX_SUPER_POISSON]
     nbr_requin = NOMBRE_INITIAUX_REQUIN
     liste_nombre_requins = [NOMBRE_INITIAUX_REQUIN]
     liste_nombre_cases_vides = [
@@ -57,6 +60,9 @@ def main() -> None:
             nbr_poisson = monde_wa_tor.grille.nombre_espece(Poisson)
             liste_nombre_poissons.append(nbr_poisson)
 
+            nbr_super_poisson = monde_wa_tor.grille.nombre_espece(SuperPoisson)
+            liste_nombre_super_poissons.append(nbr_super_poisson)
+
             nbr_requin = monde_wa_tor.grille.nombre_espece(Requin)
             liste_nombre_requins.append(nbr_requin)
 
@@ -65,6 +71,7 @@ def main() -> None:
 
             dict_entite = {
                 "poisson": liste_nombre_poissons,
+                "super-poisson": liste_nombre_super_poissons,
                 "requin": liste_nombre_requins,
                 "cases vides": liste_nombre_cases_vides,
             }

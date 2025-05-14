@@ -12,13 +12,14 @@ sys.path.append(str(Path(__file__).resolve().parent.parent))
 from time import sleep
 import random
 from CLASSES.Grille import Grille
-from CLASSES.Poisson import Poisson
+from CLASSES.Poisson import Poisson, SuperPoisson
 from CLASSES.Requin import Requin
 import gestionnaire
 from parametres import (
     NOMBRE_LIGNE_GRILLE,
     NOMBRE_COLONNE_GRILLE,
     NOMBRE_INITIAUX_POISSON,
+    NOMBRE_INITIAUX_SUPER_POISSON,
     NOMBRE_INITIAUX_REQUIN,
     TEMPS_RAFRAICHISSEMENT,
     ENERGIE_FAIM_REQUIN,
@@ -45,8 +46,10 @@ class Monde:
     def initialiser(
         self,
         classe_poisson: Poisson = Poisson,
+        classe_super_poisson: SuperPoisson = SuperPoisson,
         classe_requin: Requin = Requin,
         nb_poissons: int = NOMBRE_INITIAUX_POISSON,
+        nb_super_poissons: int = NOMBRE_INITIAUX_SUPER_POISSON,
         nb_requins: int = NOMBRE_INITIAUX_REQUIN,
     ) -> None:
         """
@@ -65,9 +68,11 @@ class Monde:
         # Vérification des paramètres d'entrée
         if nb_poissons < 0:
             raise ValueError("Le nombre de poissons initial doit être positif.")
+        if nb_super_poissons < 0:
+            raise ValueError("Le nombre de super-poissons initial doit être positif.")
         if nb_requins < 0:
             raise ValueError("Le nombre de requins initial doit être positif.")
-        self.est_suffisamment_grand(nb_poissons + nb_requins)
+        self.est_suffisamment_grand(nb_poissons + nb_super_poissons + nb_requins)
 
         # Liste aléatoires de toutes les positions de la grille
         toutes_les_positions = self.toutes_les_positions()
@@ -75,6 +80,7 @@ class Monde:
 
         # Placement des espèces dans la grille
         self.placer_une_espece(classe_poisson, nb_poissons, toutes_les_positions)
+        self.placer_une_espece(classe_super_poisson, nb_super_poissons, toutes_les_positions)
         self.placer_une_espece(classe_requin, nb_requins, toutes_les_positions)
 
     # region Méthode:est_suffisamment_grand
@@ -98,7 +104,7 @@ class Monde:
     # region Méthode:placement_entites
     def placer_une_espece(
         self,
-        classe_espece: Poisson | Requin,
+        classe_espece: Poisson | SuperPoisson | Requin,
         nb_entites: int,
         positions_possibles: list[tuple[int, int]],
     ) -> None:
@@ -185,6 +191,7 @@ class Monde:
         deja_agis = []
 
         # Execution des actions, une espèce après l'autre
+        #TODO executer_toutes_les_actions_des_super_poissons
         self.executer_toutes_les_actions_des_requins(toutes_les_positions, deja_agis)
         self.executer_toutes_les_actions_des_poissons(toutes_les_positions, deja_agis)
 

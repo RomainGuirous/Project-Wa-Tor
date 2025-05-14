@@ -17,15 +17,17 @@ def symbole_case_vide() -> str:
     return symbole
 
 
-def symbole_poisson() -> str:
+def symbole_poisson(est_super: bool = False) -> str:
     """Symbole pour les poissons.
 
     Returns:
         str: Emoji sélectionné
     """
     # symbole = Emoji.replace(":fish:") # poisson 🐟
-    symbole = Emoji.replace(":tropical_fish:")  # poisson tropical 🐠
-    # symbole = Emoji.replace(":blowfish:") # poisson ballon 🐡
+    if est_super:
+        symbole = Emoji.replace(":blowfish:")  # poisson ballon 🐡
+    else:
+        symbole = Emoji.replace(":tropical_fish:")  # poisson tropical 🐠
     return symbole
 
 
