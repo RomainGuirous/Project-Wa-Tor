@@ -182,7 +182,7 @@ class Monde:
         # Parcourir les entités et éxecuter les effets du temps
         for x, y in toutes_les_positions:
             entite = self.grille.lire_case((x, y))
-            if entite == None:
+            if entite == None or isinstance(entite, Rocher):
                 continue
 
             # Effet du temps qui passe
@@ -199,7 +199,7 @@ class Monde:
         # Parcourir les entités pour nettoyer les morts
         for x, y in toutes_les_positions:
             entite = self.grille.lire_case((x, y))
-            if entite is None:
+            if entite == None or isinstance(entite, Rocher):
                 continue
 
             # Nettoyage
