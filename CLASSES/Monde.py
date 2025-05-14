@@ -14,6 +14,7 @@ import random
 from CLASSES.Grille import Grille
 from CLASSES.Poisson import Poisson, SuperPoisson
 from CLASSES.Requin import Requin
+from CLASSES.Rocher import Rocher, positions_de_la_cavite
 import gestionnaire
 from parametres import (
     NOMBRE_LIGNE_GRILLE,
@@ -22,9 +23,15 @@ from parametres import (
     NOMBRE_INITIAUX_SUPER_POISSON,
     NOMBRE_INITIAUX_REQUIN,
     TEMPS_RAFRAICHISSEMENT,
-    ENERGIE_FAIM_REQUIN,
+    INCLURE_REFUGE,
 )
-from emojis import symbole_case_vide, symbole_poisson, symbole_requin, symbole_inconnu
+from emojis import (
+    symbole_case_vide,
+    symbole_poisson,
+    symbole_requin,
+    symbole_inconnu,
+    symbole_rocher,
+)
 
 random.seed()
 
@@ -74,8 +81,16 @@ class Monde:
             raise ValueError("Le nombre de requins initial doit être positif.")
         self.est_suffisamment_grand(nb_poissons + nb_super_poissons + nb_requins)
 
-        # Liste aléatoires de toutes les positions de la grille
+        # Liste de toutes les positions de la grille
         toutes_les_positions = self.toutes_les_positions()
+
+        # Placement du refuge
+        if INCLURE_REFUGE:
+            self.placer_les_rochers(
+                positions_de_la_cavite((0, 0)), toutes_les_positions
+            )
+
+        # Liste aléatoire de toutes les positions restantes
         random.shuffle(toutes_les_positions)
 
         # Placement des espèces dans la grille
@@ -122,6 +137,28 @@ class Monde:
             entite = classe_espece((x, y))
             self.grille.placer_entite((x, y), entite)
 
+    # region Méthode:placement_rochers
+    def placer_les_rochers(
+        self,
+        positions_souhaitées: list[tuple[int, int]],
+        positions_possibles: list[tuple[int, int]],
+    ) -> None:
+        """Placer un nombre prédéfini de rochers aux positions souhaitées en vérifiant que ces positions sont possibles.
+
+        Args:
+            positions_souhaitées (list[tuple[int, int]]): Liste des positions souhaitées pour les rochers dans la grille.
+            positions_possibles (list[tuple[int, int]]): Liste des positions encore disponibles dans la grille.
+        """
+        for position in positions_souhaitées:
+            if positions_possibles.count(position) == 0:
+                continue
+            else:
+                # Ajout d'un rocher
+                self.grille.placer_entite(position, Rocher())
+
+                # Enlever la position des positions possibles
+                positions_possibles.pop(positions_possibles.index(position))
+
     # region Méthode:toute_positions
     def toutes_les_positions(self) -> list[tuple[int, int]]:
         """
@@ -151,7 +188,7 @@ class Monde:
         # Parcourir les entités et éxecuter les effets du temps
         for x, y in toutes_les_positions:
             entite = self.grille.lire_case((x, y))
-            if entite == None:
+            if entite == None or isinstance(entite, Rocher):
                 continue
 
             # Effet du temps qui passe
@@ -168,7 +205,7 @@ class Monde:
         # Parcourir les entités pour nettoyer les morts
         for x, y in toutes_les_positions:
             entite = self.grille.lire_case((x, y))
-            if entite is None:
+            if entite == None or isinstance(entite, Rocher):
                 continue
 
             # Nettoyage
@@ -241,7 +278,7 @@ class Monde:
                         position,
                         positions_voisines_requins_adultes,
                         self.grille,
-                        deja_agis
+                        deja_agis,
                     ):
                         continue
                     # Sinon, s’il peut manger un poisson et s'il a faim, il le fait
@@ -271,7 +308,7 @@ class Monde:
                         position,
                         positions_voisines_requins_adultes,
                         self.grille,
-                        deja_agis
+                        deja_agis,
                     ):
                         continue
                     # Sinon, s'il peut manger un poisson et s'il a faim, il le fait
@@ -385,6 +422,8 @@ class Monde:
                     ligne += symbole_poisson()
                 elif isinstance(entite, Requin):
                     ligne += symbole_requin()
+                elif isinstance(entite, Rocher):
+                    ligne += symbole_rocher()
                 else:
                     ligne += symbole_inconnu()
                 ligne_separateur += "--+"
@@ -443,6 +482,13 @@ def test():
     print(grille_demo.cases_voisines_entites(Requin, (3, 3)))
     print("Cases voisines requins (monde 2D)")
     print(grille_demo.cases_voisines_entites(Requin, (3, 3), filtre_adulte=True))
+
+    # Test placer_des_rochers
+    monde = Monde()
+    toutes_les_positions = monde.toutes_les_positions()
+    monde.placer_les_rochers(positions_de_la_cavite((0, 0)), toutes_les_positions)
+    monde.afficher()
+    print(toutes_les_positions)
 
     # Création du monde et initialisation
     monde = Monde()

@@ -27,6 +27,11 @@ PERTE_ENERGIE_EN_COMBATTANT =
 # être vivant
 AFFICHER_COULEUR_AGE = 
 
+# rocher
+INCLURE_REFUGE =
+TAILLE_REFUGE =
+TAILLE_ENTREE_REFUGE =
+
 # paramètres d'affichage
 # ----------------------
 # Affichage dynamique ?

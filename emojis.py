@@ -41,6 +41,18 @@ def symbole_requin() -> str:
     return symbole
 
 
+def symbole_rocher() -> str:
+    """Symbole pour les rochers.
+
+    Returns:
+        str: Emoji sélectionné
+    """
+    # symbole = Emoji.replace(":white_circle:")  # rocher ⚪
+    # symbole = Emoji.replace(":black_square_button:") # rocher 🔲
+    symbole = Emoji.replace(":white_large_square:")  # rocher ⬜
+    return symbole
+
+
 def symbole_inconnu() -> str:
     """Symbole pour les entités inconnues
 
@@ -61,7 +73,6 @@ def symbole_inconnu() -> str:
 # Emoji.replace(":flipper:")  # dauphin 🐬
 # Emoji.replace(":ice:")  # iceberg 🧊
 # Emoji.replace(":lobster:")  # iceberg 🦞
-# Emoji.replace(":white_circle:")  # rocher ⚪
 # Emoji.replace(":whale:")  # baleine 🐳
 # Emoji.replace(":whale:")  # baleine 🐋
 # Emoji.replace(":turtle:")  # tortue 🐢
@@ -71,8 +82,6 @@ def symbole_inconnu() -> str:
 # Emoji.replace(":octopus:")  # pieuvre 🐙
 # Emoji.replace(":microbe:")  # microbe 🦠
 # Emoji.replace(":mermaid:")  # sirène 🧜‍
-# Emoji.replace(":black_square_button:") # rocher 🔲
-# Emoji.replace(":white_large_square_button:") # rocher ⬜
 
 if __name__ == "__main__":
     # Code à exécuter uniquement si ce fichier est lancé directement
