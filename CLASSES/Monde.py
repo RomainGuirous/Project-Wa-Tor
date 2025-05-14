@@ -122,6 +122,28 @@ class Monde:
             (x, y) = positions_possibles.pop()
             entite = classe_espece((x, y))
             self.grille.placer_entite((x, y), entite)
+    
+    # region Méthode:placement_rochers
+    def placer_les_rochers(
+        self,
+        positions_souhaitées: list[tuple[int, int]],
+        positions_possibles: list[tuple[int, int]],
+    ) -> None:
+        """Placer un nombre prédéfini de rochers aux positions souhaitées en vérifiant que ces positions sont possibles.
+
+        Args:
+            positions_souhaitées (list[tuple[int, int]]): Liste des positions souhaitées pour les rochers dans la grille.
+            positions_possibles (list[tuple[int, int]]): Liste des positions encore disponibles dans la grille.
+        """
+        for position in positions_souhaitées:
+            if positions_possibles.count(position) == 0:
+                continue
+            else:
+                # Ajout d'un rocher
+                self.grille.placer_entite(position, Rocher())
+
+                # Enlever la position des positions possibles
+                positions_possibles.pop(positions_possibles.index(position))
 
     # region Méthode:toute_positions
     def toutes_les_positions(self) -> list[tuple[int, int]]:
@@ -410,6 +432,13 @@ def test():
     print(grille_demo.cases_voisines_entites(Requin, (3, 3)))
     print("Cases voisines requins (monde 2D)")
     print(grille_demo.cases_voisines_entites(Requin, (3, 3), filtre_adulte=True))
+
+    # Test placer_des_rochers
+    monde = Monde()
+    toutes_les_positions = monde.toutes_les_positions()
+    monde.placer_les_rochers([(0,0)], toutes_les_positions)
+    monde.afficher()
+    print(toutes_les_positions)
 
     # Création du monde et initialisation
     monde = Monde()

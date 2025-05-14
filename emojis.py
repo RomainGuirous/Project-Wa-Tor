@@ -38,6 +38,7 @@ def symbole_requin() -> str:
     symbole = Emoji.replace(":shark:")  # requin 🦈
     return symbole
 
+
 def symbole_rocher() -> str:
     """Symbole pour les rochers.
 
@@ -46,8 +47,9 @@ def symbole_rocher() -> str:
     """
     # symbole = Emoji.replace(":white_circle:")  # rocher ⚪
     # symbole = Emoji.replace(":black_square_button:") # rocher 🔲
-    symbole = Emoji.replace(":white_large_square_button:") # rocher ⬜
+    symbole = Emoji.replace(":white_large_square:")  # rocher ⬜
     return symbole
+
 
 def symbole_inconnu() -> str:
     """Symbole pour les entités inconnues
