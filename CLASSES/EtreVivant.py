@@ -1,3 +1,4 @@
+from __future__ import annotations
 from typing import Self  # Pour le type hinting de la méthode se_reproduire
 from random import randint
 from CLASSES.Grille import Grille
@@ -40,7 +41,7 @@ class EtreVivant:
         """
         if not liste_deplacements_disponibles:
             grille = Grille()
-            liste_deplacements_disponibles = grille.cases_libres(self.position)
+            liste_deplacements_disponibles = grille.cases_voisines_libres(self.position)
 
         hasard = randint(0, len(liste_deplacements_disponibles) - 1)
         self._position = liste_deplacements_disponibles[hasard]
@@ -49,13 +50,23 @@ class EtreVivant:
     def age(self) -> int:
         """
         Renvoie l'âge de l'entité.
-        L'âge est un entier représentant le nombre d'années depuis la naissance de l'entité.
+        L'âge est un entier représentant le nombre de chronons depuis la naissance de l'entité.
         """
         return self._age
 
     @property
     def est_vivant(self) -> bool:
+        """
+        Renvoie un booléen indiquant si l'entité est vivante.
+        """
         return self._est_vivant
+
+    @property
+    def est_enceinte(self) -> bool:
+        """
+        Renvoie un booléen indiquant si l'entité est enceinte.
+        """
+        return self._est_enceinte
 
     def se_reproduire(
         self, liste_deplacements_disponibles: list[tuple[int, int]] = []
@@ -73,7 +84,7 @@ class EtreVivant:
         # Si aucune position n'est fournie, utilise la grille pour trouver les positions libres
         if not liste_deplacements_disponibles:
             grille = Grille()
-            liste_deplacements_disponibles = grille.cases_libres(self.position)
+            liste_deplacements_disponibles = grille.cases_voisines_libres(self.position)
 
         # Creation d'un nouveau être vivant à la même position (les classes filles créront leur propre instance)
         nouveau_vivant = self.__class__(self.position)
@@ -87,6 +98,9 @@ class EtreVivant:
         return nouveau_vivant
 
     def s_alimenter():
+        pass
+
+    def combattre():
         pass
 
     def vieillir(self, temps_reproduction: int) -> None:
@@ -133,9 +147,15 @@ class EtreVivant:
         Returns:
             str: affichage
         """
-        return f"est_vivant={self._est_vivant}\n" + \
-               f"age={self.age}\n" + \
-               f"position={self.position}\n" + \
-               f"temps gestion={self._temps_gestion}\n" + \
-               f"est_enceinte={self._est_enceinte}\n"
+        return (
+            f"est_vivant={self._est_vivant}\n"
+            + f"age={self.age}\n"
+            + f"position={self.position}\n"
+            + f"temps gestion={self._temps_gestion}\n"
+            + f"est_enceinte={self._est_enceinte}\n"
+        )
 
+
+if __name__ == "__main__":
+    # Code à exécuter uniquement si ce fichier est lancé directement
+    print("Ce fichier est conçu pour être importé, pas exécuté directement.")

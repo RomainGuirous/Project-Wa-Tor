@@ -1,4 +1,14 @@
+############################################################
+# Pour permettre de lancer les tests...
+#######################################
+import sys
+from pathlib import Path
+
+# Ajouter le répertoire parent au PYTHONPATH
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+############################################################
 from parametres import NOMBRE_LIGNE_GRILLE, NOMBRE_COLONNE_GRILLE
+from typing import Type  # cela correspond à un type classe
 
 
 class Grille:
@@ -90,14 +100,19 @@ class Grille:
             list[tuple[int, int]]: Liste des positions des cases voisines.
         """
         directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
-        liste_voisins = []
+        liste_voisins = set()
         for x_direction, y_direction in directions:
             x = (position_tuple[0] + x_direction) % self.colonnes
             y = (position_tuple[1] + y_direction) % self.lignes
-            liste_voisins.append((x, y))
-        return liste_voisins
+            if (x, y) != position_tuple:
+                liste_voisins.update([(x, y)])
+        return list(liste_voisins)
 
-    def cases_libres(self, position_tuple: tuple[int, int]):
+    def cases_voisines_libres(
+        self,
+        position_tuple: tuple[int, int],
+        positions_voisines: list[tuple[int, int]] = [],
+    ):
         """
         Renvoie la liste des cases libres autour d'une case donnée.
 
@@ -107,15 +122,75 @@ class Grille:
         Returns:
             list[tuple[int, int]]: Liste des positions des cases libres.
         """
-        liste_cases_libres = []
-        liste_cases_voisines = self.cases_voisines(position_tuple)
-        for case in liste_cases_voisines:
-            if self.lire_case(case) == None:
-                liste_cases_libres.append(case)
+        if not positions_voisines:
+            positions_voisines = self.cases_voisines(position_tuple)
+
+        liste_cases_libres = [
+            position_voisine
+            for position_voisine in positions_voisines
+            if self.lire_case(position_voisine) == None
+        ]
         return liste_cases_libres
 
+    def cases_voisines_entites(
+        self,
+        classe_entite,
+        position_tuple: tuple[int, int],
+        positions_voisines: list[tuple[int, int]] = [],
+        filtre_adulte: bool = False
+    ):
+        """
+        Renvoie la liste des cases libres autour d'une case donnée.
 
-grille_demo = Grille(5, 5)
-grille_demo.placer_entite((2, 3), "P")
-grille_demo.placer_entite((4, 3), "P")
-print(grille_demo.cases_libres((3, 3)))
+        Args:
+            position_tuple (tuple[int, int]): Position de la case dont on veut les cases libres.
+
+        Returns:
+            list[tuple[int, int]]: Liste des positions des cases libres.
+        """
+        if not positions_voisines:
+            positions_voisines = self.cases_voisines(position_tuple)
+
+        if not filtre_adulte:
+            liste_cases_entites = [
+                position_voisine
+                for position_voisine in positions_voisines
+                if isinstance(self.lire_case(position_voisine), classe_entite)
+            ]
+        else:
+            liste_cases_entites = []
+            for position_voisine in positions_voisines:
+                entite = self.lire_case(position_voisine)
+                if isinstance(entite, classe_entite) and not entite.est_bebe:
+                    liste_cases_entites.append(position_voisine)
+        
+        return liste_cases_entites
+
+    def nombre_espece(self, espece: Type) -> int:
+        nbr_espece = 0
+        for x in range(self.colonnes):
+            for y in range(self.lignes):
+                if isinstance(self.lire_case((x, y)), espece):
+                    nbr_espece += 1
+        return nbr_espece
+
+
+# region TEST
+def test():
+    grille_demo = Grille(5, 1)
+    print("Cases voisines (monde 1D)")
+    print(grille_demo.cases_voisines((2, 0)))
+
+    grille_demo = Grille(5, 3)
+    print("Cases voisines (monde 2D)")
+    print(grille_demo.cases_voisines((2, 0)))
+
+    grille_demo = Grille(5, 5)
+    grille_demo.placer_entite((2, 3), "P")
+    grille_demo.placer_entite((4, 3), "P")
+    print("Cases voisines vides (monde 2D)")
+    print(grille_demo.cases_voisines_libres((3, 3)))
+
+
+if __name__ == "__main__":
+    test()
