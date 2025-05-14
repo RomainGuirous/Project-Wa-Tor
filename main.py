@@ -33,7 +33,9 @@ def main() -> None:
     # Ecoulement du temps
     compteur = 0
     nbr_cases = monde_wa_tor.colonnes * monde_wa_tor.lignes
+    nbr_poisson = NOMBRE_INITIAUX_POISSON
     liste_nombre_poissons = [NOMBRE_INITIAUX_POISSON]
+    nbr_requin = NOMBRE_INITIAUX_REQUIN
     liste_nombre_requins = [NOMBRE_INITIAUX_REQUIN]
     liste_nombre_cases_vides = [
         nbr_cases - NOMBRE_INITIAUX_POISSON - NOMBRE_INITIAUX_REQUIN
@@ -69,7 +71,7 @@ def main() -> None:
 
         # Fin de la simulation
         compteur += 1
-        if compteur >= CHRONON_MAX:
+        if compteur >= CHRONON_MAX or nbr_requin <= 0:
             graphique_populations(liste_chronons, dict_entite)
             break
 
