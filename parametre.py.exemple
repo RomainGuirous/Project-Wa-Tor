@@ -23,6 +23,9 @@ ENERGIE_FAIM_CRITIQUE_REQUIN =
 GAIN_ENERGIE_EN_MANGEANT_POISSON =
 PERTE_ENERGIE_EN_COMBATTANT =
 
+# être vivant
+AFFICHER_COULEUR_AGE = 
+
 # paramètres d'affichage
 # ----------------------
 # Affichage dynamique ?
