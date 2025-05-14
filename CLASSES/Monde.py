@@ -191,9 +191,9 @@ class Monde:
         deja_agis = []
 
         # Execution des actions, une espèce après l'autre
-        #TODO executer_toutes_les_actions_des_super_poissons
+        self.executer_toutes_les_actions_des_poissons(SuperPoisson, toutes_les_positions, deja_agis)
         self.executer_toutes_les_actions_des_requins(toutes_les_positions, deja_agis)
-        self.executer_toutes_les_actions_des_poissons(toutes_les_positions, deja_agis)
+        self.executer_toutes_les_actions_des_poissons(Poisson, toutes_les_positions, deja_agis)
 
     # region Méthode: executer_toutes_les_actions_des_requins
     def executer_toutes_les_actions_des_requins(
@@ -287,7 +287,7 @@ class Monde:
 
     # region Méthode: executer_toutes_les_actions_des_poissons
     def executer_toutes_les_actions_des_poissons(
-        self, toutes_les_positions: list[tuple[int, int]], deja_agis: list
+        self, classe_poisson: Poisson | SuperPoisson, toutes_les_positions: list[tuple[int, int]], deja_agis: list
     ) -> None:
         """Exécute toutes les actions des poissons dans le monde.
         Chaque poisson peut se reproduire, manger ou se déplacer, en fonction des possibilités offertes par les case voisines.
@@ -301,7 +301,7 @@ class Monde:
         for position in toutes_les_positions:
             entite = self.grille.lire_case(position)
 
-            if all([isinstance(entite, Poisson), not position in deja_agis]):
+            if all([isinstance(entite, classe_poisson), not position in deja_agis]):
                 # Liste des positions des cases voisines (selon type)
                 positions_voisines_vides = self.grille.cases_voisines_libres(position)
 
