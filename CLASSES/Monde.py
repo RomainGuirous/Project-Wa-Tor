@@ -191,7 +191,7 @@ class Monde:
         deja_agis = []
 
         # Execution des actions, une espèce après l'autre
-        self.executer_toutes_les_actions_des_poissons(SuperPoisson, toutes_les_positions, deja_agis)
+        self.executer_actions_fuire_des_super_poissons(toutes_les_positions, deja_agis)
         self.executer_toutes_les_actions_des_requins(toutes_les_positions, deja_agis)
         self.executer_toutes_les_actions_des_poissons(Poisson, toutes_les_positions, deja_agis)
 
@@ -285,6 +285,39 @@ class Monde:
                         continue
                     # Sinon il ne bouge pas (bloqué)
 
+    # region Méthode: executer_actions_fuire_des_super_poissons
+    def executer_actions_fuire_des_super_poissons(
+        self, toutes_les_positions: list[tuple[int, int]], deja_agis: list
+    ) -> None:
+        """Exécuter les actions fuire des super-poissons dans le monde.
+        
+        Args:
+            toutes_les_positions (list[tuple[int,int]]): Toutes les positions qui n'ont pas encore été inspectées pour action à ce chronon.
+            deja_agis (list): Liste des positions des entités qui ont déjà agis durant ce chronon.
+        """
+
+        for position in toutes_les_positions:
+            entite = self.grille.lire_case(position)
+
+            if all([isinstance(entite, SuperPoisson), not position in deja_agis]):
+                # Liste des positions des cases voisines (selon type)
+                positions_voisines = self.grille.cases_voisines(position)
+                positions_voisines_vides = self.grille.cases_voisines_libres(position, positions_voisines)
+                positions_voisines_requins = self.grille.cases_voisines_entites(Requin, position, positions_voisines)
+
+                # S'il y a au moins une case vide autour:
+                if len(positions_voisines_vides) > 0 and len(positions_voisines_requins):
+                    # Un super-poisson se déplace aléatoirement en priorité pour fuire le requin
+                    if gestionnaire.execute_se_deplacer_entite(
+                        entite,
+                        position,
+                        positions_voisines_vides,
+                        self.grille,
+                        deja_agis,
+                    ):
+                        continue
+                # Sinon il fera une autre action de poisson après les requins
+
     # region Méthode: executer_toutes_les_actions_des_poissons
     def executer_toutes_les_actions_des_poissons(
         self, classe_poisson: Poisson | SuperPoisson, toutes_les_positions: list[tuple[int, int]], deja_agis: list
@@ -346,6 +379,8 @@ class Monde:
                 entite = self.grille.lire_case((x, y))
                 if entite is None:
                     ligne += symbole_case_vide()
+                elif isinstance(entite, SuperPoisson):
+                    ligne += symbole_poisson(est_super=True)
                 elif isinstance(entite, Poisson):
                     ligne += symbole_poisson()
                 elif isinstance(entite, Requin):
