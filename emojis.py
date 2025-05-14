@@ -23,11 +23,11 @@ def symbole_poisson(est_super: bool = False) -> str:
     Returns:
         str: Emoji sélectionné
     """
-    # symbole = Emoji.replace(":fish:") # poisson 🐟
     if est_super:
-        symbole = Emoji.replace(":blowfish:")  # poisson ballon 🐡
-    else:
         symbole = Emoji.replace(":tropical_fish:")  # poisson tropical 🐠
+        # symbole = Emoji.replace(":blowfish:")  # poisson ballon 🐡
+    else:
+        symbole = Emoji.replace(":fish:") # poisson 🐟
     return symbole
 
 
