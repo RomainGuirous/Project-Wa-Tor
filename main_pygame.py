@@ -41,9 +41,8 @@ horloge = pygame.time.Clock()
 police = pygame.font.SysFont("segoeui", 26, bold=True)
 petite_police = pygame.font.SysFont("segoeui", 20, bold=False)
 
-
-# Image
-def charger_image(nom):
+# Image 
+def charger_image(nom:str) -> pygame.Surface :
     """
     Charge une image et la redimensionne à la taille de la case.
 
@@ -64,9 +63,10 @@ IMG_ROCHER = charger_image("rocher.png")
 
 
 # Menu
-def dessiner_bouton(rect, texte, survol):
+def dessiner_bouton(rect: pygame.Rect, texte: str, survol: bool) -> None:
     """
-    Dessine un bouton avec un texte au centre.
+        Dessine un bouton graphique à l’écran avec un texte centré, 
+        et une couleur différente si la souris le survole.
 
     Args:
         rect (pygame.Rect): Le rectangle du bouton.
@@ -91,10 +91,11 @@ def dessiner_bouton(rect, texte, survol):
     )
 
 
-def afficher_menu():
+def afficher_menu() -> None:
     """
-    Affiche le menu principal (début de lancement) de la simulation.
-    Permet de choisir le nombre de poissons, requins et poissons spéciaux.
+    Affiche le menu principal de la simulation Wa-Tor.
+    Permet à l'utilisateur de définir le nombre initial de poissons, requins et poissons spéciaux.
+    Lance ensuite la simulation ou quitte le programme selon le choix.
 
     Returns:
         None
@@ -128,20 +129,21 @@ def afficher_menu():
         ecran.blit(titre, (LARGEUR // 2 - titre.get_width() // 2, 40))
 
         souris = pygame.mouse.get_pos()
+        #Poissons
         ecran.blit(
             police.render(f"Poissons : {nb_poissons}", True, (240, 240, 250)),
             (LARGEUR // 2 - 100, HAUTEUR // 2 - 30),
         )
         dessiner_bouton(moins_poisson, "-", moins_poisson.collidepoint(souris))
         dessiner_bouton(plus_poisson, "+", plus_poisson.collidepoint(souris))
-
+        #Requins
         ecran.blit(
             police.render(f"Requins : {nb_requins}", True, (240, 240, 250)),
             (LARGEUR // 2 - 100, HAUTEUR // 2 + 30),
         )
         dessiner_bouton(moins_requin, "-", moins_requin.collidepoint(souris))
         dessiner_bouton(plus_requin, "+", plus_requin.collidepoint(souris))
-
+        #Super poisson
         ecran.blit(
             police.render(f"Poissons + : {nb_super_poissons}", True, (240, 240, 250)),
             (LARGEUR // 2 - 100, HAUTEUR // 2 - 80),
@@ -193,10 +195,15 @@ def afficher_menu():
 
 
 # Mini-graphe en temps réel
-def dessiner_courbe_mini(poissons_speciaux, poissons, requins):
+def dessiner_courbe_mini(
+    poissons_speciaux: list[int], 
+    poissons: list[int], 
+    requins: list[int]
+) -> None:
     """
-    Dessine un mini-graphe en bas à droite de l'écran.
-
+    Affiche un mini-graphique (courbe) de l’évolution des populations 
+    (poissons, requins, poissons spéciaux) en bas à droite de l’écran.
+     
     Args:
         poissons_speciaux (list): Liste des poissons spéciaux.
         poissons (list): Liste des poissons.
@@ -224,10 +231,15 @@ def dessiner_courbe_mini(poissons_speciaux, poissons, requins):
 
 
 # Grille
-def afficher_grille(monde, poissons_speciaux, poissons, requins):
+def afficher_grille(
+    monde: Monde,
+    poissons_speciaux: list[int],
+    poissons: list[int],
+    requins: list[int]
+) -> None:
     """
-    Affiche la grille du monde avec les entités présentes.
-
+    Affiche l’état actuel du monde (grille) avec toutes les entités : poissons, requins, poissons spéciaux et rochers.
+    
     Args:
         monde (Monde): Instance du monde à afficher.
         poissons_speciaux (list): Liste des poissons spéciaux.
@@ -254,10 +266,10 @@ def afficher_grille(monde, poissons_speciaux, poissons, requins):
 
 
 # Fin avec affichage ecran & possibilité de relancer le jeu
-def afficher_ecran_fin():
+def afficher_ecran_fin() -> None:
     """
-    Affiche l'écran de fin de simulation avec un fond vidéo et des boutons pour rejouer ou quitter.
-    Permet de relancer la simulation ou de quitter le programme.
+    Affiche l’écran de fin de simulation avec une vidéo d’arrière-plan.
+    L’utilisateur peut choisir de relancer la simulation ou quitter le programme.
 
     Returns:
         None"""
@@ -300,11 +312,16 @@ def afficher_ecran_fin():
 
 
 # Simulation
-def simulation():
+def simulation() -> None:
     """
-    Fonction principale de la simulation.
-    Elle gère l'affichage de la grille, le déroulement des tours, la pause et l'alerte d'extinction.
-    Elle affiche également un graphique des populations d'entités au fil du temps.
+    Lance et gère le déroulement de la simulation Wa-Tor :
+    - Incrémente les chronons
+    - Met à jour la grille
+    - Gère les événements utilisateur (pause, navigation, etc.)
+    - Affiche l’évolution des entités
+    - Déclenche une alerte si une espèce s’éteint
+
+    À la fin de la simulation, un graphique est affiché et l’écran de fin est proposé.
 
     Returns:
         None
@@ -313,7 +330,7 @@ def simulation():
     monde.initialiser()
     tour = 0
     mondes_enregistres = []
-    index_tour_affiche = -1  # -1 = en temps réel
+    index_tour_affiche = -1  # -1 pour le temps réel
     pause = False
     historique_poissons_speciaux = []
     historique_poissons = []
