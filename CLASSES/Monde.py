@@ -23,6 +23,7 @@ from parametres import (
     NOMBRE_INITIAUX_REQUIN,
     TEMPS_RAFRAICHISSEMENT,
     INCLURE_REFUGE,
+    TAILLE_REFUGE
 )
 from emojis import (
     symbole_case_vide,
@@ -80,10 +81,22 @@ class Monde:
         toutes_les_positions = self.toutes_les_positions()
 
         # Placement du refuge
+        #if INCLURE_REFUGE:
+         #   self.placer_les_rochers(
+          #      positions_de_la_cavite((0, 0)), toutes_les_positions
+           # )
+
         if INCLURE_REFUGE:
-            self.placer_les_rochers(
-                positions_de_la_cavite((0, 0)), toutes_les_positions
-            )
+            taille = TAILLE_REFUGE
+            max_x = self.colonnes - taille - 1
+            max_y = self.lignes - taille - 1
+            x_aleatoire = random.randint(0, max_x)
+            y_aleatoire = random.randint(0, max_y)
+            position_depart = (x_aleatoire, y_aleatoire)
+
+        self.placer_les_rochers(
+            positions_de_la_cavite(position_depart), toutes_les_positions
+        )
 
         # Liste aléatoire de toutes les positions restantes
         random.shuffle(toutes_les_positions)
