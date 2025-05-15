@@ -10,17 +10,18 @@ from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from matplotlib.figure import Figure
 
 from graphique import graphique_populations
-
 from parametres import (
     CHRONON_MAX,
     NOMBRE_LIGNE_GRILLE_PYGAME,
     NOMBRE_COLONNE_GRILLE_PYGAME,
     NOMBRE_INITIAUX_POISSON,
     NOMBRE_INITIAUX_REQUIN,
+    NOMBRE_INITIAUX_SUPER_POISSON,
     INCLURE_REFUGE
 )
+
 from CLASSES.Monde import Monde
-from CLASSES.Poisson import Poisson
+from CLASSES.Poisson import Poisson, SuperPoisson
 from CLASSES.Requin import Requin
 from CLASSES.Rocher import Rocher
 
@@ -39,7 +40,7 @@ ecran = pygame.display.set_mode((LARGEUR, HAUTEUR))
 pygame.display.set_caption("Wa-Tor Simulation")
 horloge = pygame.time.Clock()
 
-#FOnt
+#Aspect
 police = pygame.font.SysFont("segoeui", 26, bold=True)
 petite_police = pygame.font.SysFont("segoeui", 20, bold=False)
 
@@ -49,7 +50,7 @@ def charger_image(nom):
     return pygame.transform.scale(pygame.image.load(chemin), (TAILLE_CASE, TAILLE_CASE))
 
 IMG_POISSON_SPECIAL = charger_image("poisson_special.png")
-IMG_POISSON = charger_image("poisson_special.png")
+IMG_POISSON = charger_image("poisson.png")
 IMG_REQUIN = charger_image("requin.png")
 IMG_ROCHER = charger_image("rocher.png")
 
@@ -67,12 +68,15 @@ def afficher_menu():
     video = cv2.VideoCapture("peripherique_pygame/video_fond.mp4")
     nb_poissons = NOMBRE_INITIAUX_POISSON
     nb_requins = NOMBRE_INITIAUX_REQUIN
+    nb_super_poissons = NOMBRE_INITIAUX_SUPER_POISSON
     btn_lancer = pygame.Rect(LARGEUR // 2 - 100, HAUTEUR // 2 + 100, 200, 50)
     btn_quitter = pygame.Rect(LARGEUR // 2 - 100, HAUTEUR // 2 + 170, 200, 50)
     moins_poisson = pygame.Rect(LARGEUR // 2 - 150, HAUTEUR // 2 - 30, 40, 40)
     plus_poisson = pygame.Rect(LARGEUR // 2 + 110, HAUTEUR // 2 - 30, 40, 40)
     moins_requin = pygame.Rect(LARGEUR // 2 - 150, HAUTEUR // 2 + 30, 40, 40)
     plus_requin = pygame.Rect(LARGEUR // 2 + 110, HAUTEUR // 2 + 30, 40, 40)
+    moins_poisson_speciaux = pygame.Rect(LARGEUR // 2 - 150, HAUTEUR // 2 - 90, 40, 40)
+    plus_poisson_speciaux = pygame.Rect(LARGEUR // 2 + 110, HAUTEUR // 2 - 90, 40, 40)
 
     en_menu = True
     while en_menu:
@@ -86,17 +90,22 @@ def afficher_menu():
         frame = np.rot90(frame)
         surface = pygame.surfarray.make_surface(frame)
         ecran.blit(surface, (0, 0))
-
         titre = police.render("Wa-Tor Simulation", True, (240, 240, 250))
         ecran.blit(titre, (LARGEUR // 2 - titre.get_width() // 2, 40))
 
         souris = pygame.mouse.get_pos()
-        ecran.blit(police.render(f"Poissons : {nb_poissons}", True, (240, 240, 250)), (LARGEUR // 2 - 80, HAUTEUR // 2 - 30))
+        ecran.blit(police.render(f"Poissons : {nb_poissons}", True, (240, 240, 250)), (LARGEUR // 2 - 100, HAUTEUR // 2 - 30))
         dessiner_bouton(moins_poisson, "-", moins_poisson.collidepoint(souris))
         dessiner_bouton(plus_poisson, "+", plus_poisson.collidepoint(souris))
-        ecran.blit(police.render(f"Requins : {nb_requins}", True, (240, 240, 250)), (LARGEUR // 2 - 80, HAUTEUR // 2 + 30))
+
+        ecran.blit(police.render(f"Requins : {nb_requins}", True, (240, 240, 250)), (LARGEUR // 2 - 100, HAUTEUR // 2 + 30))
         dessiner_bouton(moins_requin, "-", moins_requin.collidepoint(souris))
         dessiner_bouton(plus_requin, "+", plus_requin.collidepoint(souris))
+
+        ecran.blit(police.render(f"Poissons + : {nb_super_poissons}", True, (240, 240, 250)), (LARGEUR // 2 - 100, HAUTEUR // 2 - 80))
+        dessiner_bouton(moins_poisson_speciaux, "-", moins_poisson_speciaux.collidepoint(souris))
+        dessiner_bouton(plus_poisson_speciaux, "+", plus_poisson_speciaux.collidepoint(souris))
+
         dessiner_bouton(btn_lancer, "Lancer", btn_lancer.collidepoint(souris))
         dessiner_bouton(btn_quitter, "Quitter", btn_quitter.collidepoint(souris))
 
@@ -108,9 +117,12 @@ def afficher_menu():
                 if plus_poisson.collidepoint(souris): nb_poissons = min(100, nb_poissons + 1)
                 if moins_requin.collidepoint(souris): nb_requins = max(0, nb_requins - 1)
                 if plus_requin.collidepoint(souris): nb_requins = min(100, nb_requins + 1)
+                if moins_poisson_speciaux.collidepoint(souris): nb_super_poissons = max(0, nb_super_poissons- 1)
+                if plus_poisson_speciaux.collidepoint(souris): nb_super_poissons = min(100, nb_super_poissons + 1)
                 if btn_lancer.collidepoint(souris):
                     setattr(parametres, "NOMBRE_INITIAUX_POISSON", nb_poissons)
                     setattr(parametres, "NOMBRE_INITIAUX_REQUIN", nb_requins)
+                    setattr(parametres, "NOMBRE_INITIAUX_SUPER_POISSON", nb_super_poissons)
                     en_menu = False
                 if btn_quitter.collidepoint(souris):
                     video.release(); pygame.quit(); exit()
@@ -121,10 +133,11 @@ def afficher_menu():
     video.release()
 
 #Mini-graphe en temps réel
-def dessiner_courbe_mini(poissons, requins):
+def dessiner_courbe_mini(poissons_speciaux, poissons, requins):
     fig = Figure(figsize=(3.5, 1.2), dpi=100)
     canvas = FigureCanvas(fig)
     ax = fig.add_subplot(111)
+    ax.plot(poissons_speciaux, color='orange', linewidth=1, label="Poissons spéciaux")
     ax.plot(poissons, color='yellow', linewidth=1, label="Poissons")
     ax.plot(requins, color='blue', linewidth=1, label="Requins")
     ax.set_xticks([])
@@ -138,20 +151,24 @@ def dessiner_courbe_mini(poissons, requins):
     surf = pygame.image.frombuffer(raw_data, size, "RGBA")
     ecran.blit(surf, (LARGEUR - size[0] - 10, HAUTEUR - size[1] - 10))
 
+
+
 #Grille
-def afficher_grille(monde, poissons, requins):
+def afficher_grille(monde, poissons_speciaux, poissons, requins):
     ecran.fill((15, 18, 30))
     for y in range(NOMBRE_LIGNE_GRILLE_PYGAME):
         for x in range(NOMBRE_COLONNE_GRILLE_PYGAME):
             pos = (x, y)
             entite = monde.grille.lire_case(pos)
-            if isinstance(entite, Poisson):
+            if isinstance(entite, SuperPoisson):
                 ecran.blit(IMG_POISSON_SPECIAL, (x * TAILLE_CASE, y * TAILLE_CASE))
+            elif isinstance(entite, Poisson):
+                ecran.blit(IMG_POISSON, (x * TAILLE_CASE, y * TAILLE_CASE))
             elif isinstance(entite, Requin):
                 ecran.blit(IMG_REQUIN, (x * TAILLE_CASE, y * TAILLE_CASE))
             elif isinstance(entite, Rocher):
                 ecran.blit(IMG_ROCHER, (x * TAILLE_CASE, y * TAILLE_CASE))
-    dessiner_courbe_mini(poissons, requins)
+    dessiner_courbe_mini(poissons_speciaux,poissons, requins)
 
 #Fin avec affichage ecran & possibilité de relancer le jeu
 def afficher_ecran_fin():
@@ -191,6 +208,7 @@ def simulation():
     mondes_enregistres = []
     index_tour_affiche = -1  # -1 = en temps réel
     pause = False
+    historique_poissons_speciaux = []
     historique_poissons = []
     historique_requins = []
     btn_pause = pygame.Rect(LARGEUR - 130, 10, 120, 40)
@@ -227,51 +245,70 @@ def simulation():
                 mondes_enregistres.pop(0)
                 
             tour += 1
+            nb_super_poissons = monde.grille.nombre_espece(SuperPoisson)
             nb_poissons = monde.grille.nombre_espece(Poisson)
             nb_requins = monde.grille.nombre_espece(Requin)
             historique_poissons.append(nb_poissons)
             historique_requins.append(nb_requins)
+            historique_poissons_speciaux.append(nb_super_poissons)
+
 
             #ALERTE EXTINCTION
-            if nb_poissons == 0 or nb_requins == 0:
-                pygame.mixer.music.stop()  #Stoppe la musique de fond
-                pygame.display.set_caption("EXTINCTION : " + ("Poissons" if nb_poissons == 0 else "Requins"))
+            if nb_poissons == 0 or nb_requins == 0 or nb_super_poissons == 0:
+                pygame.mixer.music.stop()  # Stoppe la musique de fond
+
+                if nb_super_poissons == 0:
+                    espece_morte = "Poissons spéciaux"
+                elif nb_poissons == 0:
+                    espece_morte = "Poissons"
+                else:
+                    espece_morte = "Requins"
+
+                pygame.display.set_caption(f"EXTINCTION : {espece_morte}")
                 alarme = pygame.mixer.Sound("peripherique_pygame/alarme.mp3")
                 alarme.play()
+
                 ecran.fill((150, 0, 0))
                 alerte = police.render("EXTINCTION !", True, (255, 255, 255))
                 ecran.blit(alerte, (LARGEUR // 2 - alerte.get_width() // 2, HAUTEUR // 2 - 20))
+
                 pygame.display.flip()
-                pygame.time.wait(11000)     # Attendre 11 secondes (le son continue pendant ce temps)
+                pygame.time.wait(11000)  # Attendre 11 secondes (le son continue pendant ce temps)
                 alarme.stop()
                 pygame.mixer.music.play(-1)  # Relance la musique en boucle
-                #Affichage du graphique à la fin depuis fichier graphique.population
+
+                # Affichage du graphique à la fin
                 liste_chronons = list(range(len(historique_poissons)))
                 dico_entite = {
-                "Poissons": historique_poissons,
-                "Requins": historique_requins
+                    "Poissons": historique_poissons,
+                    "Requins": historique_requins,
+                    "Poissons spéciaux": historique_poissons_speciaux
                 }
                 graphique_populations(liste_chronons, dico_entite)
-                afficher_ecran_fin()     #Revenir directement à l'écran de fin
+                afficher_ecran_fin()  # Revenir directement à l'écran de fin
                 return
+
 
         #Affichage du bon état en fonction du mode (pause ou temps réel)
         if pause and index_tour_affiche != -1:
             monde_a_afficher = mondes_enregistres[index_tour_affiche]
-            afficher_grille(monde_a_afficher, historique_poissons, historique_requins)
+            afficher_grille(monde_a_afficher, historique_poissons, historique_requins,historique_poissons_speciaux)
             
             #Calcul du numéro de tour affiché
             tour_affiche = tour - (len(mondes_enregistres) - 1 - index_tour_affiche)
 
             #Compter le nombre d'entités à ce moment-là
+            nb_super_poissons_affiche = monde_a_afficher.grille.nombre_espece(SuperPoisson)
             nb_poissons_affiche = monde_a_afficher.grille.nombre_espece(Poisson)
             nb_requins_affiche = monde_a_afficher.grille.nombre_espece(Requin)
 
             #Mise à jour du titre de la fenêtre
-            pygame.display.set_caption(f"Wa-Tor (Tour {tour_affiche}) | Poisson : {nb_poissons_affiche} | Requin : {nb_requins_affiche}")
+            pygame.display.set_caption(f"Wa-Tor (Tour {tour_affiche}) | Super poisson : {nb_super_poissons_affiche} | Poisson : {nb_poissons_affiche} | Requin : {nb_requins_affiche}" )
         else:
-            afficher_grille(monde, historique_poissons, historique_requins)
-            pygame.display.set_caption(f"Wa-Tor (Tour {tour}) | Poisson : {nb_poissons} | Requin : {nb_requins}")
+            afficher_grille(monde,  historique_poissons, historique_requins,historique_poissons_speciaux)
+            pygame.display.set_caption(f"Wa-Tor (Tour {tour}) | Super poisson : {nb_super_poissons} | Poisson : {nb_poissons} | Requin : {nb_requins}")
+
+
 
         #Affichage de "PAUSE" en grand au centre
         if pause:

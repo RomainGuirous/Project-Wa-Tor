@@ -52,7 +52,6 @@ class Monde:
         self.lignes = NOMBRE_LIGNE_GRILLE
 
     # region initialiser
-
     def initialiser(
         self,
         classe_poisson: Poisson = Poisson,
@@ -520,10 +519,13 @@ def test():
     # Création du monde et initialisation
     monde = Monde()
     monde.initialiser(
+        classe_super_poisson=SuperPoisson,
         classe_poisson=Poisson,
         classe_requin=Requin,
+        nb_super_poissons=NOMBRE_INITIAUX_SUPER_POISSON,
         nb_poissons=NOMBRE_INITIAUX_POISSON,
         nb_requins=NOMBRE_INITIAUX_REQUIN,
+        
     )
     print(repr(monde))
 
