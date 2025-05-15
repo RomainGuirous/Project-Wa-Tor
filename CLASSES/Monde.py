@@ -24,6 +24,7 @@ from parametres import (
     NOMBRE_INITIAUX_REQUIN,
     TEMPS_RAFRAICHISSEMENT,
     INCLURE_REFUGE,
+    ENERGIE_FAIM_CRITIQUE_REQUIN,
 )
 from emojis import (
     symbole_case_vide,
@@ -38,7 +39,7 @@ random.seed()
 
 # Classe qui représente le monde Wa-Tor
 class Monde:
-    # region Méthode:__init__
+    # region __init__
     def __init__(self) -> None:
         """
         Constructeur de la classe Monde.
@@ -49,7 +50,8 @@ class Monde:
         self.colonnes = NOMBRE_COLONNE_GRILLE
         self.lignes = NOMBRE_LIGNE_GRILLE
 
-    # region Méthode:initialiser
+    # region initialiser
+
     def initialiser(
         self,
         classe_poisson: Poisson = Poisson,
@@ -98,7 +100,8 @@ class Monde:
         self.placer_une_espece(classe_super_poisson, nb_super_poissons, toutes_les_positions)
         self.placer_une_espece(classe_requin, nb_requins, toutes_les_positions)
 
-    # region Méthode:est_suffisamment_grand
+    # region suffisamment_grand
+
     def est_suffisamment_grand(self, nb_entites: int) -> None:
         """Vérifie si la taille de la grille est suffisament grand par
         rapport au nombre de poissons et nombres de requins demandés
@@ -116,7 +119,8 @@ class Monde:
                 f"Le nombre initial de poissons et de requins ({nb_entites}) est trop grand pour la taille de grille\nTaille de la grille: {self.lignes}X{self.colonnes}"
             )
 
-    # region Méthode:placement_entites
+    # region placer entites
+
     def placer_une_espece(
         self,
         classe_espece: Poisson | SuperPoisson | Requin,
@@ -137,7 +141,8 @@ class Monde:
             entite = classe_espece((x, y))
             self.grille.placer_entite((x, y), entite)
 
-    # region Méthode:placement_rochers
+    # region placer rocher
+
     def placer_les_rochers(
         self,
         positions_souhaitées: list[tuple[int, int]],
@@ -159,7 +164,8 @@ class Monde:
                 # Enlever la position des positions possibles
                 positions_possibles.pop(positions_possibles.index(position))
 
-    # region Méthode:toute_positions
+    # region toute position
+
     def toutes_les_positions(self) -> list[tuple[int, int]]:
         """
         Renvoie une liste de toutes les positions de la grille.
@@ -169,7 +175,8 @@ class Monde:
         """
         return [(x, y) for x in range(self.colonnes) for y in range(self.lignes)]
 
-    # region Méthode:executer_chronon
+    # region chronon
+
     def executer_chronon(self) -> None:
         """
         Exécute un chronon du monde Wa-Tor.
@@ -211,7 +218,8 @@ class Monde:
             # Nettoyage
             self.grille.nettoyer_case((x, y))
 
-    # region Méthode: executer_toutes_les_actions
+    # region toutes actions
+
     def executer_toutes_les_actions(self) -> None:
         """
         Exécute toutes les actions des entités dans le monde.
@@ -232,7 +240,8 @@ class Monde:
         self.executer_toutes_les_actions_des_requins(toutes_les_positions, deja_agis)
         self.executer_toutes_les_actions_des_poissons(Poisson, toutes_les_positions, deja_agis)
 
-    # region Méthode: executer_toutes_les_actions_des_requins
+    # region actions requins
+
     def executer_toutes_les_actions_des_requins(
         self, toutes_les_positions: list[tuple[int, int]], deja_agis: list
     ) -> None:
@@ -322,7 +331,9 @@ class Monde:
                         continue
                     # Sinon il ne bouge pas (bloqué)
 
-    # region Méthode: executer_actions_fuire_des_super_poissons
+    # region action super p
+
+
     def executer_actions_fuire_des_super_poissons(
         self, toutes_les_positions: list[tuple[int, int]], deja_agis: list
     ) -> None:
@@ -355,7 +366,7 @@ class Monde:
                         continue
                 # Sinon il fera une autre action de poisson après les requins
 
-    # region Méthode: executer_toutes_les_actions_des_poissons
+    # region actions poisson
     def executer_toutes_les_actions_des_poissons(
         self, classe_poisson: Poisson | SuperPoisson, toutes_les_positions: list[tuple[int, int]], deja_agis: list
     ) -> None:
@@ -397,7 +408,8 @@ class Monde:
                         continue
                 # Sinon il ne bouge pas (bloqué)
 
-    # region Méthode: afficher
+    # region afficher
+
     def afficher(self, param_sleep: bool = True) -> None:
         """
         Affiche la grille du monde avec les entités présentes.
@@ -445,7 +457,8 @@ class Monde:
         if param_sleep:
             sleep(TEMPS_RAFRAICHISSEMENT)
 
-    # region Méthode __repr__
+    # region __repr__
+
     def __repr__(self) -> str:
         """
         Affichage terminal
@@ -456,6 +469,7 @@ class Monde:
 
 
 # region TEST
+
 def test():
     # Test de grille ici pour éviter les dependances circulaires
     grille_demo = Grille(5, 1)

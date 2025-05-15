@@ -6,6 +6,7 @@ import random
 
 random.seed()
 
+#region se reproduire
 
 def execute_se_reproduire_entite(
     entite: Requin | Poisson,
@@ -31,6 +32,7 @@ def execute_se_reproduire_entite(
     else:
         return False
 
+#region s'alimenter
 
 def execute_s_alimenter_requin(
     requin: Requin,
@@ -55,6 +57,7 @@ def execute_s_alimenter_requin(
     else:
         return False
 
+#region se deplacer
 
 def execute_se_deplacer_entite(
     entite: Requin | Poisson,
@@ -77,6 +80,7 @@ def execute_se_deplacer_entite(
     else:
         return False
 
+#region combat
 
 def execute_combattre_requin(
     requin: Requin,
