@@ -343,7 +343,7 @@ class Monde:
                 positions_voisines_requins = self.grille.cases_voisines_entites(Requin, position, positions_voisines)
 
                 # S'il y a au moins une case vide autour:
-                if len(positions_voisines_vides) > 0 and len(positions_voisines_requins):
+                if len(positions_voisines_vides) > 0 and len(positions_voisines_requins) > 0:
                     # Un super-poisson se déplace aléatoirement en priorité pour fuire le requin
                     if gestionnaire.execute_se_deplacer_entite(
                         entite,
