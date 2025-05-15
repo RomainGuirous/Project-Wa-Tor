@@ -8,7 +8,7 @@ class EtreVivant:
 
     _est_vivant = True
     _age = 0
-    _temps_gestion = 0
+    _temps_gestion = 0 # Compteur pour définir la prochaine reproduction
     _est_enceinte = False
 
     def __init__(self, position: tuple[int, int]) -> None:
@@ -39,10 +39,12 @@ class EtreVivant:
         Returns:
             None: L'entité se déplace vers une position aléatoire parmi les positions disponible et met à jour sa position.
         """
+        # Initialisation des positions disponibles si non fournies
         if not liste_deplacements_disponibles:
             grille = Grille()
             liste_deplacements_disponibles = grille.cases_voisines_libres(self.position)
 
+        # Déplacement aléatoire
         hasard = randint(0, len(liste_deplacements_disponibles) - 1)
         self._position = liste_deplacements_disponibles[hasard]
 
@@ -72,7 +74,9 @@ class EtreVivant:
         self, liste_deplacements_disponibles: list[tuple[int, int]] = []
     ) -> Self:
         """
-        Se déplace et laisse un nouvel être vivant derrière lui.
+        Exécute la reproduction de l'être vivant. Lorsqu'il se reproduit, un être vivant
+        se déplace aléatoirement sur une case voisine libre et laisse un nouvel être vivant de même classe
+        à sa position de départ.
 
         Args:
             liste_deplacements_disponibles (list[tuple[int, int]], optional): Liste des positions disponibles pour le déplacement.
@@ -86,10 +90,10 @@ class EtreVivant:
             grille = Grille()
             liste_deplacements_disponibles = grille.cases_voisines_libres(self.position)
 
-        # Creation d'un nouveau être vivant à la même position (les classes filles créront leur propre instance)
+        # Creation d'un nouvel être vivant à la même position (les classes filles créront leur propre instance)
         nouveau_vivant = self.__class__(self.position)
 
-        # Déplacement classique
+        # Déplacement classique aléatoire
         self.se_deplacer(liste_deplacements_disponibles)
 
         # Réinitialisation de l'état enceinte
@@ -97,10 +101,10 @@ class EtreVivant:
 
         return nouveau_vivant
 
-    def s_alimenter():
+    def s_alimenter(self):
         pass
 
-    def combattre():
+    def combattre(self):
         pass
 
     def vieillir(self, temps_reproduction: int) -> None:
@@ -135,7 +139,10 @@ class EtreVivant:
 
     def __repr__(self) -> str:
         """
-        Affichage terminal
+        Représentation officielle
+
+        Returns:
+            str: La représentation
         """
         # merci Benjamin <3
         attrs = ", ".join(f"{key}={value!r}" for key, value in vars(self).items())
@@ -145,7 +152,7 @@ class EtreVivant:
         """Représentation humainement lisible.
 
         Returns:
-            str: affichage
+            str: La représentation
         """
         return (
             f"est_vivant={self._est_vivant}\n"
