@@ -12,7 +12,7 @@ sys.path.append(str(Path(__file__).resolve().parent.parent))
 from time import sleep
 import random
 from CLASSES.Grille import Grille
-from CLASSES.Poisson import Poisson
+from CLASSES.Poisson import Poisson, SuperPoisson
 from CLASSES.Requin import Requin
 from CLASSES.Rocher import Rocher, positions_de_la_cavite
 import gestionnaire
@@ -20,6 +20,7 @@ from parametres import (
     NOMBRE_LIGNE_GRILLE,
     NOMBRE_COLONNE_GRILLE,
     NOMBRE_INITIAUX_POISSON,
+    NOMBRE_INITIAUX_SUPER_POISSON,
     NOMBRE_INITIAUX_REQUIN,
     TEMPS_RAFRAICHISSEMENT,
     INCLURE_REFUGE,
@@ -54,8 +55,10 @@ class Monde:
     def initialiser(
         self,
         classe_poisson: Poisson = Poisson,
+        classe_super_poisson: SuperPoisson = SuperPoisson,
         classe_requin: Requin = Requin,
         nb_poissons: int = NOMBRE_INITIAUX_POISSON,
+        nb_super_poissons: int = NOMBRE_INITIAUX_SUPER_POISSON,
         nb_requins: int = NOMBRE_INITIAUX_REQUIN,
     ) -> None:
         """
@@ -74,9 +77,11 @@ class Monde:
         # Vérification des paramètres d'entrée
         if nb_poissons < 0:
             raise ValueError("Le nombre de poissons initial doit être positif.")
+        if nb_super_poissons < 0:
+            raise ValueError("Le nombre de super-poissons initial doit être positif.")
         if nb_requins < 0:
             raise ValueError("Le nombre de requins initial doit être positif.")
-        self.est_suffisamment_grand(nb_poissons + nb_requins)
+        self.est_suffisamment_grand(nb_poissons + nb_super_poissons + nb_requins)
 
         # Liste de toutes les positions de la grille
         toutes_les_positions = self.toutes_les_positions()
@@ -92,6 +97,7 @@ class Monde:
 
         # Placement des espèces dans la grille
         self.placer_une_espece(classe_poisson, nb_poissons, toutes_les_positions)
+        self.placer_une_espece(classe_super_poisson, nb_super_poissons, toutes_les_positions)
         self.placer_une_espece(classe_requin, nb_requins, toutes_les_positions)
 
     # region suffisamment_grand
@@ -117,7 +123,7 @@ class Monde:
 
     def placer_une_espece(
         self,
-        classe_espece: Poisson | Requin,
+        classe_espece: Poisson | SuperPoisson | Requin,
         nb_entites: int,
         positions_possibles: list[tuple[int, int]],
     ) -> None:
@@ -230,8 +236,9 @@ class Monde:
         deja_agis = []
 
         # Execution des actions, une espèce après l'autre
+        self.executer_actions_fuire_des_super_poissons(toutes_les_positions, deja_agis)
         self.executer_toutes_les_actions_des_requins(toutes_les_positions, deja_agis)
-        self.executer_toutes_les_actions_des_poissons(toutes_les_positions, deja_agis)
+        self.executer_toutes_les_actions_des_poissons(Poisson, toutes_les_positions, deja_agis)
 
     # region actions requins
 
@@ -324,10 +331,44 @@ class Monde:
                         continue
                     # Sinon il ne bouge pas (bloqué)
 
-    # region actions poisson
+    # region action super p
 
-    def executer_toutes_les_actions_des_poissons(
+
+    def executer_actions_fuire_des_super_poissons(
         self, toutes_les_positions: list[tuple[int, int]], deja_agis: list
+    ) -> None:
+        """Exécuter les actions fuire des super-poissons dans le monde.
+        
+        Args:
+            toutes_les_positions (list[tuple[int,int]]): Toutes les positions qui n'ont pas encore été inspectées pour action à ce chronon.
+            deja_agis (list): Liste des positions des entités qui ont déjà agis durant ce chronon.
+        """
+
+        for position in toutes_les_positions:
+            entite = self.grille.lire_case(position)
+
+            if all([isinstance(entite, SuperPoisson), not position in deja_agis]):
+                # Liste des positions des cases voisines (selon type)
+                positions_voisines = self.grille.cases_voisines(position)
+                positions_voisines_vides = self.grille.cases_voisines_libres(position, positions_voisines)
+                positions_voisines_requins = self.grille.cases_voisines_entites(Requin, position, positions_voisines)
+
+                # S'il y a au moins une case vide autour:
+                if len(positions_voisines_vides) > 0 and len(positions_voisines_requins) > 0:
+                    # Un super-poisson se déplace aléatoirement en priorité pour fuire le requin
+                    if gestionnaire.execute_se_deplacer_entite(
+                        entite,
+                        position,
+                        positions_voisines_vides,
+                        self.grille,
+                        deja_agis,
+                    ):
+                        continue
+                # Sinon il fera une autre action de poisson après les requins
+
+    # region actions poisson
+    def executer_toutes_les_actions_des_poissons(
+        self, classe_poisson: Poisson | SuperPoisson, toutes_les_positions: list[tuple[int, int]], deja_agis: list
     ) -> None:
         """Exécute toutes les actions des poissons dans le monde.
         Chaque poisson peut se reproduire, manger ou se déplacer, en fonction des possibilités offertes par les case voisines.
@@ -341,7 +382,7 @@ class Monde:
         for position in toutes_les_positions:
             entite = self.grille.lire_case(position)
 
-            if all([isinstance(entite, Poisson), not position in deja_agis]):
+            if all([isinstance(entite, classe_poisson), not position in deja_agis]):
                 # Liste des positions des cases voisines (selon type)
                 positions_voisines_vides = self.grille.cases_voisines_libres(position)
 
@@ -387,6 +428,8 @@ class Monde:
                 entite = self.grille.lire_case((x, y))
                 if entite is None:
                     ligne += symbole_case_vide()
+                elif isinstance(entite, SuperPoisson):
+                    ligne += symbole_poisson(est_super=True)
                 elif isinstance(entite, Poisson):
                     ligne += symbole_poisson()
                 elif isinstance(entite, Requin):
