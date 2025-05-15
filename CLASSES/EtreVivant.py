@@ -101,12 +101,6 @@ class EtreVivant:
 
         return nouveau_vivant
 
-    def s_alimenter(self):
-        pass
-
-    def combattre(self):
-        pass
-
     def vieillir(self, temps_reproduction: int) -> None:
         """
         Vieillit l'entité d'un an et gère la reproduction si l'entité est enceinte.
