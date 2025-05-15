@@ -93,7 +93,6 @@ def execute_combattre_requin(
     if all(
         [
             not requin.est_bebe,
-            len(cases_voisines_requins_adultes) > 0,
             ENERGIE_FAIM_CRITIQUE_REQUIN < requin.energie <= ENERGIE_FAIM_REQUIN,
         ]
     ):

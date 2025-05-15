@@ -237,10 +237,43 @@ class Monde:
 
         # Execution des actions, une espèce après l'autre
         self.executer_actions_fuire_des_super_poissons(toutes_les_positions, deja_agis)
+        self.executer_combats_des_requins(toutes_les_positions, deja_agis)
         self.executer_toutes_les_actions_des_requins(toutes_les_positions, deja_agis)
         self.executer_toutes_les_actions_des_poissons(Poisson, toutes_les_positions, deja_agis)
 
     # region actions requins
+
+    def executer_combats_des_requins(
+        self, toutes_les_positions: list[tuple[int, int]], deja_agis: list
+    ) -> None:
+        """Exécute les combats des requins dans le monde.
+
+        Args:
+            toutes_les_positions (list[tuple[int,int]]): Toutes les positions qui n'ont pas encore été inspectées pour action à ce chronon.
+            deja_agis (list): Liste des positions des entités qui ont déjà agis durant ce chronon.
+        """
+
+        for position in toutes_les_positions:
+            entite = self.grille.lire_case(position)
+
+            if all([isinstance(entite, Requin), not position in deja_agis]):
+                # Liste des positions des cases voisines (total et selon type)
+                positions_voisines_requins_adultes = self.grille.cases_voisines_entites(
+                    Requin, position, filtre_adulte=True
+                )
+
+                # S'il y a au moins un autre requin à côté:
+                if len(positions_voisines_requins_adultes) > 0:
+                    # Si un requin a faim mais pas trop et qu'un autre requin est proche, il defend son territoire
+                    if gestionnaire.execute_combattre_requin(
+                        entite,
+                        position,
+                        positions_voisines_requins_adultes,
+                        self.grille,
+                        deja_agis,
+                    ):
+                        continue
+
 
     def executer_toutes_les_actions_des_requins(
         self, toutes_les_positions: list[tuple[int, int]], deja_agis: list
@@ -272,20 +305,11 @@ class Monde:
 
                 # S'il y a au moins une case vide autour:
                 if len(positions_voisines_vides) > 0:
-                    # Un requin se reproduit en priorité
+                    # Sinon Un requin se reproduit en priorité
                     if gestionnaire.execute_se_reproduire_entite(
                         entite,
                         position,
                         positions_voisines_vides,
-                        self.grille,
-                        deja_agis,
-                    ):
-                        continue
-                    # Sinon, s’il a faim mais pas trop et qu'un autre requin est proche, il defend son territoire
-                    elif gestionnaire.execute_combattre_requin(
-                        entite,
-                        position,
-                        positions_voisines_requins_adultes,
                         self.grille,
                         deja_agis,
                     ):
@@ -311,17 +335,8 @@ class Monde:
 
                 # S'il n'y a aucune case vide autour:
                 else:
-                    # Si un requin a faim mais pas trop et qu'un autre requin est proche, il defend son territoire
-                    if gestionnaire.execute_combattre_requin(
-                        entite,
-                        position,
-                        positions_voisines_requins_adultes,
-                        self.grille,
-                        deja_agis,
-                    ):
-                        continue
-                    # Sinon, s'il peut manger un poisson et s'il a faim, il le fait
-                    elif gestionnaire.execute_s_alimenter_requin(
+                    # s'il peut manger un poisson et s'il a faim, il le fait
+                    if gestionnaire.execute_s_alimenter_requin(
                         entite,
                         position,
                         positions_voisines_poissons,
@@ -421,6 +436,7 @@ class Monde:
         Returns:
             None: Affiche la grille dans le terminal.
         """
+        debug = ''
         for y in range(self.lignes):
             ligne_separateur = "+"
             ligne = "|"
@@ -434,6 +450,7 @@ class Monde:
                     ligne += symbole_poisson()
                 elif isinstance(entite, Requin):
                     ligne += symbole_requin()
+                    debug += f"Energie du requin: {entite.energie}\n"
                 elif isinstance(entite, Rocher):
                     ligne += symbole_rocher()
                 else:
@@ -455,6 +472,7 @@ class Monde:
             print(ligne_separateur)
 
         if param_sleep:
+            print(debug)
             sleep(TEMPS_RAFRAICHISSEMENT)
 
     # region __repr__
