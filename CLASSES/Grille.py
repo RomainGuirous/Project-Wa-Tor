@@ -165,15 +165,14 @@ class Grille:
                     liste_cases_entites.append(position_voisine)
         
         return liste_cases_entites
-
+    
     def nombre_espece(self, espece: Type) -> int:
-        nbr_espece = 0
-        for x in range(self.colonnes):
-            for y in range(self.lignes):
-                if isinstance(self.lire_case((x, y)), espece):
-                    nbr_espece += 1
-        return nbr_espece
-
+            nbr_espece = 0
+            for x in range(self.colonnes):
+                for y in range(self.lignes):
+                    if type(self.lire_case((x, y))) == espece:
+                        nbr_espece += 1
+            return nbr_espece
 
 # region TEST
 def test():

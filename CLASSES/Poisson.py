@@ -30,6 +30,7 @@ class Poisson(EtreVivant):
         super().mourir(age_max)
 
 class SuperPoisson(Poisson):
+    _age = 2
     pass
 
 

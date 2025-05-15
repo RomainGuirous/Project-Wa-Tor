@@ -26,7 +26,7 @@ from CLASSES.Rocher import Rocher
 TAILLE_CASE = 20
 LARGEUR = NOMBRE_COLONNE_GRILLE_PYGAME * TAILLE_CASE
 HAUTEUR = NOMBRE_LIGNE_GRILLE_PYGAME * TAILLE_CASE
-FPS = 1
+FPS = 40
 
 # Initialisation
 pygame.init()
@@ -41,8 +41,9 @@ horloge = pygame.time.Clock()
 police = pygame.font.SysFont("segoeui", 26, bold=True)
 petite_police = pygame.font.SysFont("segoeui", 20, bold=False)
 
-# Image 
-def charger_image(nom:str) -> pygame.Surface :
+
+# Image
+def charger_image(nom: str) -> pygame.Surface:
     """
     Charge une image et la redimensionne à la taille de la case.
 
@@ -65,7 +66,7 @@ IMG_ROCHER = charger_image("rocher.png")
 # Menu
 def dessiner_bouton(rect: pygame.Rect, texte: str, survol: bool) -> None:
     """
-        Dessine un bouton graphique à l’écran avec un texte centré, 
+        Dessine un bouton graphique à l’écran avec un texte centré,
         et une couleur différente si la souris le survole.
 
     Args:
@@ -129,21 +130,21 @@ def afficher_menu() -> None:
         ecran.blit(titre, (LARGEUR // 2 - titre.get_width() // 2, 40))
 
         souris = pygame.mouse.get_pos()
-        #Poissons
+        # Poissons
         ecran.blit(
             police.render(f"Poissons : {nb_poissons}", True, (240, 240, 250)),
             (LARGEUR // 2 - 100, HAUTEUR // 2 - 30),
         )
         dessiner_bouton(moins_poisson, "-", moins_poisson.collidepoint(souris))
         dessiner_bouton(plus_poisson, "+", plus_poisson.collidepoint(souris))
-        #Requins
+        # Requins
         ecran.blit(
             police.render(f"Requins : {nb_requins}", True, (240, 240, 250)),
             (LARGEUR // 2 - 100, HAUTEUR // 2 + 30),
         )
         dessiner_bouton(moins_requin, "-", moins_requin.collidepoint(souris))
         dessiner_bouton(plus_requin, "+", plus_requin.collidepoint(souris))
-        #Super poisson
+        # Super poisson
         ecran.blit(
             police.render(f"Poissons + : {nb_super_poissons}", True, (240, 240, 250)),
             (LARGEUR // 2 - 100, HAUTEUR // 2 - 80),
@@ -167,15 +168,15 @@ def afficher_menu() -> None:
                 if moins_poisson.collidepoint(souris):
                     nb_poissons = max(0, nb_poissons - 1)
                 if plus_poisson.collidepoint(souris):
-                    nb_poissons = min(100, nb_poissons + 1)
+                    nb_poissons = min(10000, nb_poissons + 1)
                 if moins_requin.collidepoint(souris):
                     nb_requins = max(0, nb_requins - 1)
                 if plus_requin.collidepoint(souris):
-                    nb_requins = min(100, nb_requins + 1)
+                    nb_requins = min(10000, nb_requins + 1)
                 if moins_poisson_speciaux.collidepoint(souris):
                     nb_super_poissons = max(0, nb_super_poissons - 1)
                 if plus_poisson_speciaux.collidepoint(souris):
-                    nb_super_poissons = min(100, nb_super_poissons + 1)
+                    nb_super_poissons = min(10000, nb_super_poissons + 1)
                 if btn_lancer.collidepoint(souris):
                     setattr(parametres, "NOMBRE_INITIAUX_POISSON", nb_poissons)
                     setattr(parametres, "NOMBRE_INITIAUX_REQUIN", nb_requins)
@@ -196,14 +197,12 @@ def afficher_menu() -> None:
 
 # Mini-graphe en temps réel
 def dessiner_courbe_mini(
-    poissons_speciaux: list[int], 
-    poissons: list[int], 
-    requins: list[int]
+    poissons_speciaux: list[int], poissons: list[int], requins: list[int]
 ) -> None:
     """
-    Affiche un mini-graphique (courbe) de l’évolution des populations 
+    Affiche un mini-graphique (courbe) de l’évolution des populations
     (poissons, requins, poissons spéciaux) en bas à droite de l’écran.
-     
+
     Args:
         poissons_speciaux (list): Liste des poissons spéciaux.
         poissons (list): Liste des poissons.
@@ -215,8 +214,8 @@ def dessiner_courbe_mini(
     fig = Figure(figsize=(3.5, 1.2), dpi=100)
     canvas = FigureCanvas(fig)
     ax = fig.add_subplot(111)
-    ax.plot(poissons_speciaux, color="orange", linewidth=1, label="Poissons spéciaux")
-    ax.plot(poissons, color="yellow", linewidth=1, label="Poissons")
+    ax.plot(poissons_speciaux, color="yellow", linewidth=1, label="Poissons spéciaux")
+    ax.plot(poissons, color="orange", linewidth=1, label="Poissons")
     ax.plot(requins, color="blue", linewidth=1, label="Requins")
     ax.set_xticks([])
     ax.set_yticks([])
@@ -232,14 +231,11 @@ def dessiner_courbe_mini(
 
 # Grille
 def afficher_grille(
-    monde: Monde,
-    poissons_speciaux: list[int],
-    poissons: list[int],
-    requins: list[int]
+    monde: Monde, poissons_speciaux: list[int], poissons: list[int], requins: list[int]
 ) -> None:
     """
     Affiche l’état actuel du monde (grille) avec toutes les entités : poissons, requins, poissons spéciaux et rochers.
-    
+
     Args:
         monde (Monde): Instance du monde à afficher.
         poissons_speciaux (list): Liste des poissons spéciaux.
