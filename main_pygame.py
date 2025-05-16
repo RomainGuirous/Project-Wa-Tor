@@ -228,7 +228,6 @@ def dessiner_courbe_mini(
     surf = pygame.image.frombuffer(raw_data, size, "RGBA")
     ecran.blit(surf, (LARGEUR - size[0] - 10, HAUTEUR - size[1] - 10))
 
-
 # Grille
 def afficher_grille(
     monde: Monde, poissons_speciaux: list[int], poissons: list[int], requins: list[int]
@@ -324,37 +323,41 @@ def simulation() -> None:
     """
     monde = Monde()
     monde.initialiser()
+
+    # Comptage initial des entités séparés
+    nb_super_poissons = monde.grille.nombre_espece(SuperPoisson)
+    nb_poissons_total = monde.grille.nombre_espece(Poisson)
+    nb_poissons = nb_poissons_total - nb_super_poissons
+    nb_requins = monde.grille.nombre_espece(Requin)
+
+    # Initialisation des historiques avec les premiers états
+    historique_poissons_speciaux = [nb_super_poissons]
+    historique_poissons = [nb_poissons]
+    historique_requins = [nb_requins]
+
     tour = 0
     mondes_enregistres = []
-    index_tour_affiche = -1  # -1 pour le temps réel
+    index_tour_affiche = -1
     pause = False
-    historique_poissons_speciaux = []
-    historique_poissons = []
-    historique_requins = []
     btn_pause = pygame.Rect(LARGEUR - 130, 10, 120, 40)
+
     while tour < CHRONON_MAX:
         horloge.tick(FPS)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
+                pygame.quit(); exit()
 
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
                     pause = not pause
-                    index_tour_affiche = -1  # Retour au temps réel
-
+                    index_tour_affiche = -1
                 elif pause and event.key == pygame.K_LEFT:
                     if index_tour_affiche == -1:
                         index_tour_affiche = len(mondes_enregistres) - 2
                     elif index_tour_affiche > 0:
                         index_tour_affiche -= 1
-
                 elif pause and event.key == pygame.K_RIGHT:
-                    if (
-                        index_tour_affiche != -1
-                        and index_tour_affiche < len(mondes_enregistres) - 1
-                    ):
+                    if index_tour_affiche != -1 and index_tour_affiche < len(mondes_enregistres) - 1:
                         index_tour_affiche += 1
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -370,11 +373,14 @@ def simulation() -> None:
 
             tour += 1
             nb_super_poissons = monde.grille.nombre_espece(SuperPoisson)
-            nb_poissons = monde.grille.nombre_espece(Poisson)
+            nb_poissons_total = monde.grille.nombre_espece(Poisson)
+            nb_poissons = nb_poissons_total - nb_super_poissons
             nb_requins = monde.grille.nombre_espece(Requin)
+
+            historique_poissons_speciaux.append(nb_super_poissons)
             historique_poissons.append(nb_poissons)
             historique_requins.append(nb_requins)
-            historique_poissons_speciaux.append(nb_super_poissons)
+
 
             # ALERTE EXTINCTION
             if nb_poissons == 0 or nb_requins == 0 or nb_super_poissons == 0:
@@ -442,10 +448,9 @@ def simulation() -> None:
         else:
             afficher_grille(
                 monde,
-                historique_poissons,
-                historique_requins,
                 historique_poissons_speciaux,
-            )
+                historique_poissons,
+                historique_requins,            )
             pygame.display.set_caption(
                 f"Wa-Tor (Tour {tour}) | Super poisson : {nb_super_poissons} | Poisson : {nb_poissons} | Requin : {nb_requins}"
             )

@@ -9,6 +9,7 @@ from parametres import (
     NOMBRE_INITIAUX_POISSON,
     NOMBRE_INITIAUX_SUPER_POISSON,
     NOMBRE_INITIAUX_REQUIN,
+    AFFICHAGE_TERMINAL,
 )
 from tools import rafraichir_terminal
 
@@ -29,7 +30,8 @@ def main() -> None:
     # Initialisation du monde Wa-Tor
     monde_wa_tor = Monde()
     monde_wa_tor.initialiser()
-    monde_wa_tor.afficher()
+    if AFFICHAGE_TERMINAL:
+        monde_wa_tor.afficher()
 
     # Ecoulement du temps
     
@@ -46,12 +48,16 @@ def main() -> None:
     ]
     liste_chronons = [0]
     while True:
-        if CLEAR_TERMINAL:
+        if AFFICHAGE_TERMINAL and CLEAR_TERMINAL:
             rafraichir_terminal()
 
         # Évolution du monde
         monde_wa_tor.executer_chronon()
-        monde_wa_tor.afficher()
+        if AFFICHAGE_TERMINAL:
+            monde_wa_tor.afficher()
+        else:
+            if monde_wa_tor.chronon % 1000 == 0:
+                print(f"Chronons {monde_wa_tor.chronon}...", end="\r")
 
         # partie graphique
         if monde_wa_tor.chronon % INTERVALLE_AFFICHAGE == 0:
@@ -61,7 +67,7 @@ def main() -> None:
             nbr_super_poisson = monde_wa_tor.grille.nombre_espece(SuperPoisson)
             liste_nombre_super_poissons.append(nbr_super_poisson)
 
-            nbr_poisson = monde_wa_tor.grille.nombre_espece(Poisson) - nbr_super_poisson
+            nbr_poisson = monde_wa_tor.grille.nombre_espece(Poisson)
             liste_nombre_poissons.append(nbr_poisson)
 
             nbr_requin = monde_wa_tor.grille.nombre_espece(Requin)
