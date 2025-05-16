@@ -30,6 +30,7 @@
 - **`parametres.py`** : Paramètres globaux de la simulation (effectifs, âges, énergie, options d’affichage, etc.).
 - **`graphique.py`** : Affichage graphique et animation de l’évolution des populations avec Matplotlib.
 - **`tools.py`** : Fonctions utilitaires (ex : rafraîchissement du terminal).
+- **`gestionnaire.py`** : Permet de gérer les différents comportements des différentes entités.
 
 ### Dossier `CLASSES`
 
@@ -53,3 +54,73 @@ Avant de lancer la simulation, transformez le fichier `parametres.py.exemple` en
 - Installez les dépendances avec :
   ```bash
   pip install -r requirements.txt
+
+---
+
+## Paramètres optimaux
+
+- Ces paramètres font en sorte de faire durer la simulation pendant de long cycles.
+
+```py
+# paramètres de la simulation
+# ---------------------------
+
+# grille
+CHRONON_MAX = 1000000
+NOMBRE_LIGNE_GRILLE = 20
+NOMBRE_COLONNE_GRILLE = 40
+
+# grille spécifique à Pygame
+NOMBRE_LIGNE_GRILLE_PYGAME = 40
+NOMBRE_COLONNE_GRILLE_PYGAME = 80
+# NOMBRE_LIGNE_GRILLE = NOMBRE_LIGNE_GRILLE_PYGAME
+# NOMBRE_COLONNE_GRILLE = NOMBRE_COLONNE_GRILLE_PYGAME
+
+# poisson
+NOMBRE_INITIAUX_POISSON = 0
+NOMBRE_INITIAUX_SUPER_POISSON = 50
+LIMITE_AGE_POISSON = 10
+TEMPS_GESTION_POISSON = 2
+
+# requin
+NOMBRE_INITIAUX_REQUIN = 10
+LIMITE_AGE_REQUIN = 35
+AGE_ADULTE_REQUIN = 10
+TEMPS_GESTION_REQUIN = 10
+ENERGIE_INITIALE_REQUIN = 10
+ENERGIE_MAX_REQUIN = 15
+ENERGIE_FAIM_REQUIN = 10
+ENERGIE_FAIM_CRITIQUE_REQUIN = 3
+GAIN_ENERGIE_EN_MANGEANT_POISSON = 4
+PERTE_ENERGIE_EN_COMBATTANT = 3
+
+# être vivant
+AFFICHER_COULEUR_AGE = True
+
+# rocher
+INCLURE_REFUGE = True
+NOMBRE_REFUGES = 3
+TAILLE_REFUGE = 6
+TAILLE_ENTREE_REFUGE = 2
+
+# paramètres d'affichage
+# ----------------------
+# Activer l'affichage terminal ?
+AFFICHAGE_TERMINAL = False
+
+# Affichage dynamique ?
+# True: ne voir que la dernière carte
+# False: conserver l'affichage de toutes les cartes
+CLEAR_TERMINAL = True
+
+# Intervalle d'affichage
+INTERVALLE_AFFICHAGE = 5
+
+# Temps de rafraichissement du terminal en secondes
+TEMPS_RAFRAICHISSEMENT = 0.05
+
+if __name__ == "__main__":
+  # Code à exécuter uniquement si ce fichier est lancé directement
+  print("Ce fichier est conçu pour être importé, pas exécuté directement.")
+```
+
