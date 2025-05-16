@@ -2,8 +2,8 @@
 
 ## Description
 
-**Project-Wa-Tor** est une simulation inspirée du modèle Wa-Tor, où poissons, super-poissons et requins évoluent dans un environnement en grille. Chaque entité suit des règles de déplacement, reproduction, vieillissement, prédation et gestion de l’énergie. Le projet propose :
-- Un affichage terminal de la grille,
+**Project-Wa-Tor** est une simulation inspirée du modèle Wa-Tor, où poissons, super-poissons et requins évoluent dans un environnement en grille. Chaque entité suit des règles de micro-comportements simples communes ou dépendantes de son espèce (déplacement, reproduction, vieillissement, prédation, gestion de l’énergie, défense de territoire et fuite). Le projet propose :
+- Un affichage terminal de la grille embelli d'emojis
 - Une visualisation graphique de l’évolution des populations (Matplotlib),
 - Une interface graphique interactive avec PyGame.
 
@@ -11,13 +11,16 @@
 
 ## Fonctionnalités
 
-- Simulation d’un écosystème dynamique avec poissons, super-poissons et requins.
-- Gestion de la reproduction, du vieillissement, du déplacement, de la prédation et de l’énergie.
-- Affichage de la grille en temps réel dans le terminal.
+- Simulation d’un écosystème dynamique avec poissons et requins sur une grille toroidale
+- Gestion du déplacement aléatoire, de la reproduction périodique, du vieillissement et autre effet du temps pour toutes les espèces.
+- Gestion de l'alimentation (prédation) et de la défense du territoire (combat) des requins.
+- Gestion de la fuite (déplacement anticipée), spécifique des super-poissons.
+- Intégration d'une zone entourée de rochers connectée au reste du monde par une unique entrée.
+- Affichage dynamique de la grille en temps réel dans le terminal.
 - Visualisation graphique de l’évolution des populations (poissons, super-poissons, requins, cases vides) avec Matplotlib.
 - Animation de l’évolution des populations avec `FuncAnimation`.
 - Interface graphique interactive avec PyGame (sprites, boutons, menus).
-- Paramétrage facile via le fichier `parametres.py`.
+- Multiples paramètres de configuration de la simulation via le fichier `parametres.py` couvrant les comportements des espèces, l'état initial du monde et les paramètres d'affichage.
 
 ---
 
@@ -25,19 +28,19 @@
 
 ### Fichiers principaux
 
-- **`main.py`** : Point d’entrée de la simulation terminale et graphique (Matplotlib).
+- **`main.py`** : Point d’entrée de la simulation avec affichage terminale et visualisation graphique (Matplotlib).
 - **`main_pygame.py`** : Version alternative avec interface graphique PyGame.
 - **`parametres.py`** : Paramètres globaux de la simulation (effectifs, âges, énergie, options d’affichage, etc.).
+- **`gestionnaire.py`** : Permet de gérer les différents actions des différentes entités et la mise à jour de la grille en conséquence.
 - **`graphique.py`** : Affichage graphique et animation de l’évolution des populations avec Matplotlib.
 - **`tools.py`** : Fonctions utilitaires (ex : rafraîchissement du terminal).
-- **`gestionnaire.py`** : Permet de gérer les différents comportements des différentes entités.
 
 ### Dossier `CLASSES`
 
 - **`EtreVivant.py`** : Classe de base pour les entités vivantes (poissons, super-poissons, requins).
-- **`Poisson.py`** : Classe Poisson et SuperPoisson, héritant de `EtreVivant`.
-- **`Requin.py`** : Classe Requin, héritant de `EtreVivant`, avec gestion de l’énergie.
-- **`Grille.py`** : Classe Grille, gère la matrice du monde et les interactions de voisinage.
+- **`Poisson.py`** : Classes Poisson et SuperPoisson, héritant de `EtreVivant`.
+- **`Requin.py`** : Classe Requin, héritant de `EtreVivant`, avec intégration d'un niveau d’énergie et sa gestion.
+- **`Grille.py`** : Classe Grille, gère la matrice du monde et les reconnaissances de voisinage.
 - **`Monde.py`** : Classe Monde, orchestre la simulation, la grille et les entités.
 
 ### Dossier `peripherique_pygame`
@@ -46,20 +49,19 @@
 
 ---
 
-## Prérequis
+## Prérequis, installation et mode d'emploi
 
-- Important :
-Avant de lancer la simulation, transformez le fichier `parametres.py.exemple` en `parametres.py` et adaptez les paramètres à vos besoins
 - Python 3.10 ou supérieur.
 - Installez les dépendances avec :
   ```bash
   pip install -r requirements.txt
-
+- Configuration de votre simulation avant éxecution :
+copiez-collez le fichier `parametres.py.exemple` en `parametres.py` et complétez les différents paramètres à vos propres valeurs pour tester différents scénarios
 ---
 
 ## Paramètres optimaux
 
-- Ces paramètres font en sorte de faire durer la simulation pendant de long cycles.
+- Ces paramètres font en sorte de faire durer la simulation pendant de longs cycles.
 
 ```py
 # paramètres de la simulation
@@ -124,3 +126,9 @@ if __name__ == "__main__":
   print("Ce fichier est conçu pour être importé, pas exécuté directement.")
 ```
 
+## Auteur.e.s
+- Sanae Al Massati (code de la simulation, Pygame)
+- Romain Guirous (code de la simulation, Matplotlib)
+- César Gattano (code de la simulation, affichage terminal)
+
+Le code de la simulation a été programmée en étroites interactions entre ces 3 personnes de manière agile et à contributions égales.
