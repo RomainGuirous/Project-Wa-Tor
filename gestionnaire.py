@@ -1,20 +1,37 @@
+from typing import (
+    Type,
+)  # cela correspond à un type classefrom CLASSES.Requin import Requin
+from CLASSES.Poisson import Poisson, SuperPoisson
 from CLASSES.Requin import Requin
-from CLASSES.Poisson import Poisson
 from CLASSES.Grille import Grille
 from parametres import ENERGIE_FAIM_REQUIN, ENERGIE_FAIM_CRITIQUE_REQUIN
 import random
 
 random.seed()
 
-#region se reproduire
+# region se reproduire
+
 
 def execute_se_reproduire_entite(
-    entite: Requin | Poisson,
+    entite: Requin | Poisson | SuperPoisson,
     position: tuple[int, int],
     cases_voisines_vides: list[tuple[int, int]],
     grille: Grille,
     deja_agis: list[tuple[int, int]],
 ) -> bool:
+    """Gère l'éxecution d'une action se reproduire d'une entité et
+    ses conséquences.
+
+    Args:
+        entite (Requin | Poisson | SuperPoisson): L'entité qui éxecute l'action
+        position (tuple[int, int]): La position de cette entité
+        cases_voisines_vides (list[tuple[int, int]]): La liste des cases voisines vides
+        grille (Grille): La grille du monde
+        deja_agis (list[tuple[int, int]]): Liste des positions contenant des entités qui ont déjà agis à ce chronon.
+
+    Returns:
+        bool: Retourne True si l'action se reproduire a été éxecutée.
+    """
 
     if entite.est_enceinte:
         # Execution action
@@ -32,7 +49,9 @@ def execute_se_reproduire_entite(
     else:
         return False
 
-#region s'alimenter
+
+# region s'alimenter
+
 
 def execute_s_alimenter_requin(
     requin: Requin,
@@ -41,6 +60,18 @@ def execute_s_alimenter_requin(
     grille: Grille,
     deja_agis: list[tuple[int, int]],
 ) -> bool:
+    """Gère l'éxecution de l'action s'alimenter d'un requin et les conséquences directes.
+
+    Args:
+        requin (Requin): Le requin qui éxecuter l'action
+        position (tuple[int, int]): La position du requin
+        cases_voisines_poissons (list[tuple[int, int]]): Liste des cases voisines aux requins qui sont occupées par un poissons
+        grille (Grille): La grille du monde
+        deja_agis (list[tuple[int, int]]): Liste des positions contenant des entités qui ont déjà agis à ce chronon.
+
+    Returns:
+        bool: Retourne True si l'action a été éxecutée.
+    """
 
     if len(cases_voisines_poissons) > 0 and requin.energie <= ENERGIE_FAIM_REQUIN:
         # Execution action
@@ -57,7 +88,9 @@ def execute_s_alimenter_requin(
     else:
         return False
 
-#region se deplacer
+
+# region se deplacer
+
 
 def execute_se_deplacer_entite(
     entite: Requin | Poisson,
@@ -66,6 +99,19 @@ def execute_se_deplacer_entite(
     grille: Grille,
     deja_agis: list[tuple[int, int]],
 ) -> bool:
+    """Gère l'éxecution de l'action se déplacer par une entité et
+    ses conséquences directes.
+
+    Args:
+        entite (Requin | Poisson): L'entité qui éxecuter l'action
+        position (tuple[int, int]): La position de l'entité
+        cases_voisines_vides (list[tuple[int, int]]): Liste des cases voisines vides à l'entité
+        grille (Grille): La grille du monde
+        deja_agis (list[tuple[int, int]]): Liste des positions occupées par des entités qui ont déhjà agis à ce chronon.
+
+    Returns:
+        bool: Retourne True si l'action a pu être éxecutée.
+    """
     if len(cases_voisines_vides) > 0:
         # Execution action
         entite.se_deplacer(cases_voisines_vides)  # L'entité a changé de position
@@ -80,7 +126,9 @@ def execute_se_deplacer_entite(
     else:
         return False
 
-#region combat
+
+# region combat
+
 
 def execute_combattre_requin(
     requin: Requin,
@@ -89,11 +137,23 @@ def execute_combattre_requin(
     grille: Grille,
     deja_agis: list[tuple[int, int]],
 ) -> bool:
+    """Gère l'éxecution de l'action combattre d'une requin et ses
+    conséquences directes
+
+    Args:
+        requin (Requin): Le requin qui éxecuter l'action
+        position (tuple[int, int]): La position du requin
+        cases_voisines_requins_adultes (list[tuple[int, int]]): La liste des case voisines occupées par des requins adultes.
+        grille (Grille): Le grille du monde
+        deja_agis (list[tuple[int, int]]): La liste des positiones occupées par des entités qui ont déjà agis à ce chronon
+
+    Returns:
+        bool: Retourne True si l'action a pu être éxecutée
+    """
 
     if all(
         [
             not requin.est_bebe,
-            len(cases_voisines_requins_adultes) > 0,
             ENERGIE_FAIM_CRITIQUE_REQUIN < requin.energie <= ENERGIE_FAIM_REQUIN,
         ]
     ):

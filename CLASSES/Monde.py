@@ -9,6 +9,7 @@ from pathlib import Path
 # Ajouter le répertoire parent au PYTHONPATH
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 ############################################################
+from typing import Type  # cela correspond à un type classe
 from time import sleep
 import random
 from CLASSES.Grille import Grille
@@ -54,9 +55,9 @@ class Monde:
     # region initialiser
     def initialiser(
         self,
-        classe_poisson: Poisson = Poisson,
-        classe_super_poisson: SuperPoisson = SuperPoisson,
-        classe_requin: Requin = Requin,
+        classe_poisson: Type[Poisson] = Poisson,
+        classe_super_poisson: Type[SuperPoisson] = SuperPoisson,
+        classe_requin: Type[Requin] = Requin,
         nb_poissons: int = NOMBRE_INITIAUX_POISSON,
         nb_super_poissons: int = NOMBRE_INITIAUX_SUPER_POISSON,
         nb_requins: int = NOMBRE_INITIAUX_REQUIN,
@@ -66,10 +67,12 @@ class Monde:
         Les entités sont placées aléatoirement sur la grille.
 
         Args:
-            nb_poissons (int): Nombre de poissons à placer.
-            nb_requins (int): Nombre de requins à placer.
-            classe_poisson (Poisson): Classe du poisson.
-            classe_requin (Requin): Classe du requin.
+            classe_poisson (Type[Poisson], optionel): Classe associée aux poissons. Par défaut: Poisson
+            classe_super_poisson (Type[SuperPoisson], optionel): Classe associée aux super-poissons. Par défaut: SuperPoisson
+            classe_requin (Type[Requin], optionel): Classe associée aux requins. Par défaut: Requin
+            nb_poissons (int, optionel): Nombre de poissons à placer. Par défaut: NOMBRE_INITAUX_POISSON
+            nb_super_poissons (int, optionel): Nombre de super-poissons à placer. Par défaut: NOMBRE_INITIAUX_SUPER_POISSON
+            nb_requins (int, optionel): Nombre de requins à placer. Par défaut: NOMBRE_INITIAUX_REQUIN
 
         Returns:
             None
@@ -87,11 +90,6 @@ class Monde:
         toutes_les_positions = self.toutes_les_positions()
 
         # Placement du refuge
-        #if INCLURE_REFUGE:
-         #   self.placer_les_rochers(
-          #      positions_de_la_cavite((0, 0)), toutes_les_positions
-           # )
-
         if INCLURE_REFUGE:
             taille = TAILLE_REFUGE
             max_x = self.colonnes - taille - 1
@@ -115,8 +113,8 @@ class Monde:
     # region suffisamment_grand
 
     def est_suffisamment_grand(self, nb_entites: int) -> None:
-        """Vérifie si la taille de la grille est suffisament grand par
-        rapport au nombre de poissons et nombres de requins demandés
+        """Vérifie si la taille de la grille est suffisament grande par
+        rapport au nombre de poissons, super-poissons et requins demandés
         initialement.
 
         Args:
@@ -135,14 +133,14 @@ class Monde:
 
     def placer_une_espece(
         self,
-        classe_espece: Poisson | SuperPoisson | Requin,
+        classe_espece: Type[Poisson | SuperPoisson | Requin],
         nb_entites: int,
         positions_possibles: list[tuple[int, int]],
     ) -> None:
         """Placer un nombre prédéfini d'entités dans la grille pour une certaine espèce.
 
         Args:
-            classe_espece (Poisson | Requin): Espèce concernée
+            classe_espece (Type[Poisson | SuperPoisson | Requin]): Espèce concernée
             nb_entites (int): Nombre d'entités à placer
             positions_possibles (list[tuple[int, int]]): Liste des positions encore disponibles dans la grille.
         """
@@ -192,7 +190,7 @@ class Monde:
     def executer_chronon(self) -> None:
         """
         Exécute un chronon du monde Wa-Tor.
-        Chaque entité vieillit, se déplace et se reproduit si nécessaire.
+        Chaque entité fait une action (vieillit, se déplace, se reproduit, ...) si possible.
         Les entités sont traitées dans un ordre aléatoire pour simuler le comportement du monde.
 
         Returns:
@@ -219,6 +217,7 @@ class Monde:
             # cela permettra aux autres entites de se déplacer sur les case occupées par les entités mortes
             self.grille.nettoyer_case((x, y))
 
+        # Gestion de toutes les actions
         self.executer_toutes_les_actions()
 
         # Parcourir les entités pour nettoyer les morts
@@ -235,7 +234,9 @@ class Monde:
     def executer_toutes_les_actions(self) -> None:
         """
         Exécute toutes les actions des entités dans le monde.
-        Les requins agissent en premier, suivis des poissons.
+        Les super-poissons se déplacent en premier pour échapper aux
+        requins, puis les requins combattent out ils agissent autrement,
+        puis les poissons agissent.
 
         Returns:
             None
@@ -249,10 +250,43 @@ class Monde:
 
         # Execution des actions, une espèce après l'autre
         self.executer_actions_fuire_des_super_poissons(toutes_les_positions, deja_agis)
+        self.executer_combats_des_requins(toutes_les_positions, deja_agis)
         self.executer_toutes_les_actions_des_requins(toutes_les_positions, deja_agis)
         self.executer_toutes_les_actions_des_poissons(Poisson, toutes_les_positions, deja_agis)
 
     # region actions requins
+
+    def executer_combats_des_requins(
+        self, toutes_les_positions: list[tuple[int, int]], deja_agis: list
+    ) -> None:
+        """Exécute les combats des requins dans le monde.
+
+        Args:
+            toutes_les_positions (list[tuple[int,int]]): Toutes les positions qui n'ont pas encore été inspectées pour action à ce chronon.
+            deja_agis (list): Liste des positions des entités qui ont déjà agis durant ce chronon.
+        """
+
+        for position in toutes_les_positions:
+            entite = self.grille.lire_case(position)
+
+            if all([isinstance(entite, Requin), not position in deja_agis]):
+                # Liste des positions des cases voisines (total et selon type)
+                positions_voisines_requins_adultes = self.grille.cases_voisines_entites(
+                    Requin, position, filtre_adulte=True
+                )
+
+                # S'il y a au moins un autre requin à côté:
+                if len(positions_voisines_requins_adultes) > 0:
+                    # Si un requin a faim mais pas trop et qu'un autre requin est proche, il defend son territoire
+                    if gestionnaire.execute_combattre_requin(
+                        entite,
+                        position,
+                        positions_voisines_requins_adultes,
+                        self.grille,
+                        deja_agis,
+                    ):
+                        continue
+
 
     def executer_toutes_les_actions_des_requins(
         self, toutes_les_positions: list[tuple[int, int]], deja_agis: list
@@ -284,20 +318,11 @@ class Monde:
 
                 # S'il y a au moins une case vide autour:
                 if len(positions_voisines_vides) > 0:
-                    # Un requin se reproduit en priorité
+                    # Sinon Un requin se reproduit en priorité
                     if gestionnaire.execute_se_reproduire_entite(
                         entite,
                         position,
                         positions_voisines_vides,
-                        self.grille,
-                        deja_agis,
-                    ):
-                        continue
-                    # Sinon, s’il a faim mais pas trop et qu'un autre requin est proche, il defend son territoire
-                    elif gestionnaire.execute_combattre_requin(
-                        entite,
-                        position,
-                        positions_voisines_requins_adultes,
                         self.grille,
                         deja_agis,
                     ):
@@ -323,17 +348,8 @@ class Monde:
 
                 # S'il n'y a aucune case vide autour:
                 else:
-                    # Si un requin a faim mais pas trop et qu'un autre requin est proche, il defend son territoire
-                    if gestionnaire.execute_combattre_requin(
-                        entite,
-                        position,
-                        positions_voisines_requins_adultes,
-                        self.grille,
-                        deja_agis,
-                    ):
-                        continue
-                    # Sinon, s'il peut manger un poisson et s'il a faim, il le fait
-                    elif gestionnaire.execute_s_alimenter_requin(
+                    # s'il peut manger un poisson et s'il a faim, il le fait
+                    if gestionnaire.execute_s_alimenter_requin(
                         entite,
                         position,
                         positions_voisines_poissons,
@@ -380,13 +396,14 @@ class Monde:
 
     # region actions poisson
     def executer_toutes_les_actions_des_poissons(
-        self, classe_poisson: Poisson | SuperPoisson, toutes_les_positions: list[tuple[int, int]], deja_agis: list
+        self, classe_poisson: Type[Poisson | SuperPoisson], toutes_les_positions: list[tuple[int, int]], deja_agis: list
     ) -> None:
         """Exécute toutes les actions des poissons dans le monde.
         Chaque poisson peut se reproduire, manger ou se déplacer, en fonction des possibilités offertes par les case voisines.
         Les poissons agissent dans un ordre aléatoire pour simuler le comportement du monde.
 
         Args:
+            classe_poisson (Type[Poisson | SuperPoisson]): Classe associée aux poissons
             toutes_les_positions (list[tuple[int,int]]): Toutes les positions qui n'ont pas encore été inspectées pour action à ce chronon.
             deja_agis (list): Liste des positions des entités qui ont déjà agis durant ce chronon.
         """
@@ -427,12 +444,13 @@ class Monde:
         Affiche la grille du monde avec les entités présentes.
         Chaque case est représentée par un emoji correspondant à l'entité présente.
         Les cases vides sont représentées par un emoji d'eau.
-        Les poissons et requins sont représentés par leurs emojis respectifs.
+        Les poissons et requins et rochers sont représentés par leurs emojis respectifs.
         Si param_sleep est True, la fonction attend un certain temps avant de rafraîchir l'affichage.
 
         Returns:
             None: Affiche la grille dans le terminal.
         """
+        ligne_separateur = ""
         for y in range(self.lignes):
             ligne_separateur = "+"
             ligne = "|"
@@ -473,7 +491,9 @@ class Monde:
 
     def __repr__(self) -> str:
         """
-        Affichage terminal
+        Représentation officielle
+
+        Returns: La représentation
         """
         # merci Benjamin <3
         attrs = ", ".join(f"{key}={value!r}" for key, value in vars(self).items())
