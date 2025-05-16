@@ -1,4 +1,6 @@
-from __future__ import annotations
+from __future__ import (
+    annotations,
+)  # Pour indiquer la classe de self à une autre paramètre dans le type hinting
 
 ############################################################
 # Pour permettre de lancer les tests...
@@ -22,18 +24,19 @@ from parametres import (
     TEMPS_GESTION_REQUIN,
     LIMITE_AGE_REQUIN,
     PERTE_ENERGIE_EN_COMBATTANT,
-    AGE_ADULTE_REQUIN
+    AGE_ADULTE_REQUIN,
 )
 
 
 class Requin(EtreVivant):
     __energie = ENERGIE_INITIALE_REQUIN
-    _est_bebe = True
+    _est_bebe = True  # Pour épargner les bébés dans la phase de combat
 
     @property
     def energie(self) -> int:
+        """Renvoie le niveau d'énergie du requin"""
         return self.__energie
-    
+
     @property
     def est_bebe(self) -> bool:
         """
@@ -41,21 +44,22 @@ class Requin(EtreVivant):
         """
         return self._est_bebe
 
-    def perte_d_energie(self):
+    def perte_d_energie(self) -> None:
         """Perd 1 en energie."""
         self.__energie -= 1
 
     def s_alimenter(self, position_proie: tuple[int, int]) -> bool:
         """
         se déplace à la position de la proie et
-        l'élimine pour gagner de l'énergie
+        l'élimine pour gagner de l'énergie.
 
         Args:
-            proie (Poisson): le poisson qui sera mangé
+            position_proie (tuple[int, int]): Position de la proie sur la grille
 
         Returns:
-            bool: le poisson a-t-il été mangé ?
+            bool: La proie a-t-elle été mangé ?
         """
+
         # Déplacement vers la proie
         self._position = position_proie
 
@@ -63,12 +67,11 @@ class Requin(EtreVivant):
         self.__energie += min(
             GAIN_ENERGIE_EN_MANGEANT_POISSON, ENERGIE_MAX_REQUIN - self.__energie
         )
-        # proie._est_vivant = False
         return True
 
     def combattre(self, adversaire: Requin) -> bool:
         """
-        combat avec un autre requin. Le résultat du combat est aléatoire. 
+        combat avec un autre requin. Le résultat du combat est aléatoire.
         L'un des deux requins meurent, l'autre prend sa position et perd
         de l'énergie.
 
@@ -100,15 +103,18 @@ class Requin(EtreVivant):
 
     def vieillir(self, temps_reproduction: int = TEMPS_GESTION_REQUIN) -> None:
         """
-        Vieillit le requin d'un an et gère la reproduction si le requin est enceinte.
+        Vieillit le requin d'un chronon, lui fait perd 1 d'énergie,
+        indique si le requin devient enceinte et gère le passage à
+        l'âge adulte.
 
         Args:
-            temps_reproduction (int): Temps nécessaire pour que le requin puisse se reproduire.
+            temps_reproduction (int, optionel): Temps nécessaire pour que le requin puisse se reproduire.
+            Default est à TEMPS_GESTION_REQUIN
 
         Returns:
             None
         """
-        # Vieillit le requin
+        # Vieillit le requin en tant qu'être vivant
         super().vieillir(temps_reproduction)
         # Perte d'énergie
         self.perte_d_energie()
@@ -121,7 +127,7 @@ class Requin(EtreVivant):
         Indique la mort du requin si il a dépassé l'âge maximum ou si il n'a plus d'énergie.
 
         Args:
-            age_max (int): Âge maximum du requin.
+            age_max (int, optionel): Âge maximum du requin. Par défaut est à LIMITE_AGE_REQUIN.
 
         Returns:
             None
@@ -137,36 +143,46 @@ class Requin(EtreVivant):
         """Représentation humainement lisible
 
         Returns:
-            str: affichage
+            str: La représentation
         """
-        return super(Requin, self).__str__() + f"est_bebe={self._est_bebe}\n" + f"energie={self.__energie}\n"
+        return (
+            super(Requin, self).__str__()
+            + f"est_bebe={self._est_bebe}\n"
+            + f"energie={self.__energie}\n"
+        )
 
 
-# Test conserver temporairement
+# Test
 def test():
+    # Test initialisation
     requin = Requin(position=(1, 1))
     print(f"Requin:\n{str(requin)}")
 
+    # Test s'alimenter
     poisson = Poisson(position=(1, 0))
     print(f"Poisson:\n{str(poisson)}")
     requin.s_alimenter(poisson.position)
     print(f"Requin:\n{str(requin)}")
     print(f"Poisson:\n{str(poisson)}")
 
+    # Test s'alimenter
     poisson = Poisson(position=(2, 0))
     print(f"Poisson:\n{str(poisson)}")
     requin.s_alimenter(poisson.position)
     print(f"Requin:\n{str(requin)}")
     print(f"Poisson:\n{str(poisson)}")
 
+    # Test se reproduire
     nouveau_requin = requin.se_reproduire()
     print(f"Requin:\n{str(requin)}")
     print(f"Requin:\n{str(nouveau_requin)}")
 
-    while (requin.est_bebe):
+    # Test vieillir
+    while requin.est_bebe:
         requin.vieillir()
-        print(f"Requin:\n{str(requin)}")    
+        print(f"Requin:\n{str(requin)}")
 
+    # Test mourir
     nouveau_requin.__energie = 0
     nouveau_requin.mourir()
     print(f"Requin:\n{str(nouveau_requin)}")
@@ -174,8 +190,10 @@ def test():
     requin.mourir()
     print(f"Requin:\n{str(requin)}")
 
+    # Test type
     print(type(str(requin)))
 
+    # Test combattre
     requin1 = Requin(position=(1, 1))
     print(f"Requin1:\n{str(requin1)}")
     requin2 = Requin(position=(2, 1))
@@ -183,7 +201,6 @@ def test():
     requin1.combattre(requin2)
     print(f"Requin1:\n{str(requin1)}")
     print(f"Requin2:\n{str(requin2)}")
-
 
 
 if __name__ == "__main__":
