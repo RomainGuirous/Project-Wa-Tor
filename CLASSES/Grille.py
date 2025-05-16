@@ -170,7 +170,7 @@ class Grille:
             nbr_espece = 0
             for x in range(self.colonnes):
                 for y in range(self.lignes):
-                    if type(self.lire_case((x, y))) == espece:
+                    if isinstance(self.lire_case((x, y)), espece):
                         nbr_espece += 1
             return nbr_espece
 
