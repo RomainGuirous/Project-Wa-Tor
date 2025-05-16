@@ -32,6 +32,7 @@ def main() -> None:
     monde_wa_tor.afficher()
 
     # Ecoulement du temps
+    
     compteur = 0
     nbr_cases = monde_wa_tor.colonnes * monde_wa_tor.lignes
     nbr_poisson = NOMBRE_INITIAUX_POISSON
